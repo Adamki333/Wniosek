@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Zewnętrzne biblioteki do generowania PDF -->
+  <!-- Zewnętrzne biblioteki do generowania PDF (jeśli potrzebne) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -77,6 +77,7 @@
       font-size: 1.875rem;
       line-height: 1.25;
       font-weight: 700;
+      margin: 0;
     }
 
     .form-body {
@@ -241,6 +242,7 @@
       font-size: 0.875rem;
       color: #374151;
       font-weight: 500;
+      cursor: pointer;
     }
 
     .form-checkbox, .form-radio {
@@ -253,6 +255,7 @@
       border: 1px solid #6b7280;
       background-color: #f9fafb;
       cursor: pointer;
+      flex-shrink: 0;
     }
 
     .form-checkbox {
@@ -364,21 +367,41 @@
 
 
     /* --- Buttons & Footer --- */
-    .btn-primary {
-      padding: 0.75rem 2rem;
-      background-color: var(--primary);
-      color: #ffffff;
-      font-weight: 600;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-      transition: all 300ms;
-      cursor: pointer;
-      border: none;
+    .btn {
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        transition: all 300ms;
+        cursor: pointer;
+        border: none;
+    }
+    .btn:disabled {
+        cursor: not-allowed;
+        box-shadow: none;
     }
 
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
     .btn-primary:hover {
       background-color: #b90000;
       box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+    .btn-primary:disabled {
+        background-color: #fca5a5;
+    }
+
+    .btn-secondary {
+        background-color: #6b7280;
+        color: #ffffff;
+    }
+    .btn-secondary:hover {
+        background-color: #4b5563;
+    }
+    .btn-secondary:disabled {
+        background-color: #d1d5db;
     }
     
     .btn-add {
@@ -408,26 +431,42 @@
       background-color: #b91c1c; /* bg-red-700 */
     }
 
-    .btn-primary:disabled {
-        background-color: #fca5a5;
-        cursor: not-allowed;
-        box-shadow: none;
-    }
-
     .form-footer {
         margin-top: 3rem;
         padding-top: 2rem;
         border-top: 1px solid #d1d5db;
         display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .footer-actions {
+        display: flex;
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
+        gap: 1rem;
+        width: 100%;
+    }
+
+    .footer-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
         gap: 1rem;
     }
 
     .footer-note {
         font-size: 0.875rem;
         color: #6b7280;
+    }
+    
+    #saveStatus {
+        font-size: 0.875rem;
+        color: #16a34a;
+        font-weight: 500;
+        transition: opacity 0.5s;
     }
 
     .required-asterisk {
@@ -443,9 +482,7 @@
       background-color: #f9fafb; /* bardzo jasny szary */
       border: 1px dashed #d1d5db;
       border-radius: 0.5rem;
-      flex-grow: 1; /* pozwoli mu się ładnie rozciągnąć */
-      margin: 0 1.5rem; /* odstęp od innych elementów */
-      flex-basis: 100%;
+      width: 100%;
     }
 
     .statements-container {
@@ -533,7 +570,6 @@
     }
     .master-consent-container .form-checkbox {
         margin-top: 0.25rem;
-        flex-shrink: 0;
     }
     .totals-row {
         margin-top: 1.5rem;
@@ -542,6 +578,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
         gap: 1rem;
     }
     .totals-label {
@@ -551,6 +588,7 @@
     }
     .totals-fields-wrapper {
         display: flex;
+        flex-wrap: wrap;
         gap: 1rem;
     }
     .totals-fields-wrapper .input-with-unit {
@@ -568,12 +606,14 @@
   <div class="form-container">
     <header class="banner">
       <div class="banner-content">
-        <img src="C:\Users\akluczynski\Desktop\Formularz wniosku\html\FRiPWW_LOGO_biale.png" alt="Logo FRiP" class="logo" />
+        <!-- Zaktualizowana ścieżka do logo. Zmień ją na prawidłową jeśli jest inna -->
+        <img src="https://www.fripww.pl/wp-content/uploads/2021/11/logo_FRiPWW_biale.png" alt="Logo FRiP" class="logo" />
         <h1>Wniosek o zawarcie / zmianę<br />Umowy Ramowej</h1>
       </div>
     </header>
 
     <form id="applicationForm" class="form-body" novalidate>
+      <!-- Treść formularza pozostaje bez zmian... -->
       <section>
         <h2 class="form-section-header">I. Dane wnioskodawcy</h2>
         
@@ -615,12 +655,12 @@
         <div class="subsection">
             <h3 class="subsection-header">2. Reprezentacja firmy</h3>
             <div id="reprezentacja-container" class="form-grid">
-                <div class="grid-col-span-2"><label for="rep_name" class="form-label required">Imię i nazwisko</label><input type="text" id="rep_name" required class="input-field"></div>
-                <div><label for="rep_position" class="form-label required">Stanowisko/funkcja</label><input type="text" id="rep_position" required class="input-field"></div>
-                <div><label for="rep_phone" class="form-label required">Telefon</label><input type="tel" id="rep_phone" required data-format="phone" title="Podaj prawidłowy numer telefonu (min. 9 cyfr)." class="input-field"></div>
-                <div class="grid-col-span-2"><label for="rep_email" class="form-label required">Adres e-mail</label><input type="email" id="rep_email" required title="Podaj prawidłowy adres e-mail." class="input-field"></div>
-                <div><label for="rep_id_number" class="form-label required">Numer dowodu osobistego</label><input type="text" id="rep_id_number" required data-format="id" title="Podaj numer dowodu w formacie AAA123456." class="input-field"></div>
-                <div><label for="rep_pesel" class="form-label required">PESEL</label><input type="text" id="rep_pesel" required data-format="pesel" title="Podaj 11 cyfr numeru PESEL." class="input-field"></div>
+                <div class="grid-col-span-2"><label for="rep_name" class="form-label required">Imię i nazwisko</label><input type="text" id="rep_name" name="rep_name" required class="input-field"></div>
+                <div><label for="rep_position" class="form-label required">Stanowisko/funkcja</label><input type="text" id="rep_position" name="rep_position" required class="input-field"></div>
+                <div><label for="rep_phone" class="form-label required">Telefon</label><input type="tel" id="rep_phone" name="rep_phone" required data-format="phone" title="Podaj prawidłowy numer telefonu (min. 9 cyfr)." class="input-field"></div>
+                <div class="grid-col-span-2"><label for="rep_email" class="form-label required">Adres e-mail</label><input type="email" id="rep_email" name="rep_email" required title="Podaj prawidłowy adres e-mail." class="input-field"></div>
+                <div><label for="rep_id_number" class="form-label required">Numer dowodu osobistego</label><input type="text" id="rep_id_number" name="rep_id_number" required data-format="id" title="Podaj numer dowodu w formacie AAA123456." class="input-field"></div>
+                <div><label for="rep_pesel" class="form-label required">PESEL</label><input type="text" id="rep_pesel" name="rep_pesel" required data-format="pesel" title="Podaj 11 cyfr numeru PESEL." class="input-field"></div>
                 
                 <div class="grid-col-span-2"><p class="form-label required">Adres</p></div>
                 <div class="grid-col-span-2"><label for="rep_street" class="form-label">Ulica</label><input type="text" id="rep_street" name="rep_street" required class="input-field" /></div>
@@ -640,10 +680,10 @@
                 </label>
             </div>
             <div id="contact-person-fields" class="form-grid">
-                <div class="grid-col-span-2"><label for="contact_name" class="form-label">Imię i nazwisko</label><input type="text" id="contact_name" class="input-field"></div>
-                <div><label for="contact_position" class="form-label">Stanowisko/funkcja</label><input type="text" id="contact_position" class="input-field"></div>
-                <div><label for="contact_phone" class="form-label">Telefon</label><input type="tel" id="contact_phone" data-format="phone" class="input-field"></div>
-                <div class="grid-col-span-2"><label for="contact_email" class="form-label">Adres e-mail</label><input type="email" id="contact_email" class="input-field"></div>
+                <div class="grid-col-span-2"><label for="contact_name" class="form-label">Imię i nazwisko</label><input type="text" id="contact_name" name="contact_name" class="input-field"></div>
+                <div><label for="contact_position" class="form-label">Stanowisko/funkcja</label><input type="text" id="contact_position" name="contact_position" class="input-field"></div>
+                <div><label for="contact_phone" class="form-label">Telefon</label><input type="tel" id="contact_phone" name="contact_phone" data-format="phone" class="input-field"></div>
+                <div class="grid-col-span-2"><label for="contact_email" class="form-label">Adres e-mail</label><input type="email" id="contact_email" name="contact_email" class="input-field"></div>
             </div>
         </div>
         
@@ -699,10 +739,10 @@
                 <label for="limit_kontrakt" class="form-label">Należytego wykonania kontraktu, usunięcia wad i usterek oraz zwrotu zaliczki</label>
                 <div class="input-with-unit"><input type="text" id="limit_kontrakt" data-format="currency" placeholder="Wnioskowana kwota" class="input-field limit-sum-source"><span class="unit">PLN</span></div>
                 
-                <hr class="grid-col-span-2">
+                <hr class="grid-col-span-2" style="border-color: #e5e7eb;">
                 
                 <label for="limit_lacznie" class="form-label" style="font-weight: 700;">Łącznie (wyżej wymienione)</label>
-                <input type="text" id="limit_lacznie" class="input-field" style="font-weight: 700; background-color: #e5e7eb;" readonly>
+                <div class="input-with-unit"><input type="text" id="limit_lacznie" class="input-field" style="font-weight: 700; background-color: #e5e7eb;" readonly><span class="unit">PLN</span></div>
             </div>
         </div>
       </section>
@@ -718,12 +758,12 @@
             </div>
             
             <div class="form-grid">
-                <div><label for="start_date" class="form-label">Data rozpoczęcia działalności</label><input type="date" id="start_date" class="input-field"></div>
-                <div><label for="tenders_participated" class="form-label">Ilość przetargów w których firma brała udział w ubiegłym roku</label><input type="number" id="tenders_participated" class="input-field" min="0"></div>
-                <div><label for="tenders_won" class="form-label">Ilość wygranych przetargów w ubiegłym roku</label><input type="number" id="tenders_won" class="input-field" min="0"></div>
+                <div><label for="start_date" class="form-label">Data rozpoczęcia działalności</label><input type="date" id="start_date" name="start_date" class="input-field"></div>
+                <div><label for="tenders_participated" class="form-label">Ilość przetargów w których firma brała udział w ubiegłym roku</label><input type="number" id="tenders_participated" name="tenders_participated" class="input-field" min="0"></div>
+                <div><label for="tenders_won" class="form-label">Ilość wygranych przetargów w ubiegłym roku</label><input type="number" id="tenders_won" name="tenders_won" class="input-field" min="0"></div>
                 <div>
                     <label for="planned_revenue" class="form-label">Planowany przychód na koniec bieżącego roku</label>
-                    <div class="input-with-unit"><input type="text" id="planned_revenue" data-format="currency" class="input-field" placeholder="Kwota"><span class="unit">PLN</span></div>
+                    <div class="input-with-unit"><input type="text" id="planned_revenue" name="planned_revenue" data-format="currency" class="input-field" placeholder="Kwota"><span class="unit">PLN</span></div>
                 </div>
             </div>
 
@@ -731,33 +771,33 @@
                 <div class="financial-year-card">
                     <h4>Bieżący rok (n)</h4>
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field"><span class="unit">osób</span></div></div>
-                        <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                        <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                        <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field" name="zatrudnienie_n"><span class="unit">osób</span></div></div>
+                        <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="obroty_n"><span class="unit">PLN</span></div></div>
+                        <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="aktywa_n"><span class="unit">PLN</span></div></div>
                     </div>
                 </div>
                  <div class="financial-year-card">
                     <h4>Ubiegły rok (n-1)</h4>
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field"><span class="unit">osób</span></div></div>
-                        <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                        <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                        <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field" name="zatrudnienie_n1"><span class="unit">osób</span></div></div>
+                        <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="obroty_n1"><span class="unit">PLN</span></div></div>
+                        <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="aktywa_n1"><span class="unit">PLN</span></div></div>
                     </div>
                 </div>
                  <div class="financial-year-card">
                     <h4>Dwa lata wstecz (n-2)</h4>
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field"><span class="unit">osób</span></div></div>
-                        <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                        <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                        <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field" name="zatrudnienie_n2"><span class="unit">osób</span></div></div>
+                        <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="obroty_n2"><span class="unit">PLN</span></div></div>
+                        <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="aktywa_n2"><span class="unit">PLN</span></div></div>
                     </div>
                 </div>
                  <div class="financial-year-card">
                     <h4>Trzy lata wstecz (n-3)</h4>
                     <div style="display: flex; flex-direction: column; gap: 1rem;">
-                        <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field"><span class="unit">osób</span></div></div>
-                        <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                        <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                        <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field" name="zatrudnienie_n3"><span class="unit">osób</span></div></div>
+                        <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="obroty_n3"><span class="unit">PLN</span></div></div>
+                        <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="aktywa_n3"><span class="unit">PLN</span></div></div>
                     </div>
                 </div>
             </div>
@@ -943,37 +983,31 @@
             <div class="financial-period-card">
                 <h4>Stan na koniec ubiegłego roku</h4>
                 <div class="space-y-4">
-                    <div>
-                        <label class="form-label">Należności ogółem</label>
-                        <div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div>
-                    </div>
+                    <div><label class="form-label">Należności ogółem</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_ub_ogolem"><span class="unit">PLN</span></div></div>
                     <hr>
                     <p class="form-label font-semibold">w tym należności przeterminowane:</p>
-                    <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_ub_pt_ogolem"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_ub_pt_30"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_ub_pt_60"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_ub_pt_90"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_ub_pt_180"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_ub_pt_360"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_ub_pt_360plus"><span class="unit">PLN</span></div></div>
                 </div>
             </div>
             <div class="financial-period-card">
                 <h4>Stan na ostatnie F-01</h4>
                 <div class="space-y-4">
-                    <div>
-                        <label class="form-label">Należności ogółem</label>
-                        <div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div>
-                    </div>
+                     <div><label class="form-label">Należności ogółem</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_f01_ogolem"><span class="unit">PLN</span></div></div>
                     <hr>
                     <p class="form-label font-semibold">w tym należności przeterminowane:</p>
-                    <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_f01_pt_ogolem"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_f01_pt_30"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_f01_pt_60"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_f01_pt_90"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_f01_pt_180"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_f01_pt_360"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="nal_f01_pt_360plus"><span class="unit">PLN</span></div></div>
                 </div>
             </div>
         </div>
@@ -990,37 +1024,31 @@
              <div class="financial-period-card">
                 <h4>Stan na koniec ubiegłego roku</h4>
                 <div class="space-y-4">
-                    <div>
-                        <label class="form-label">Zobowiązania ogółem</label>
-                        <div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div>
-                    </div>
+                    <div><label class="form-label">Zobowiązania ogółem</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_ub_ogolem"><span class="unit">PLN</span></div></div>
                     <hr>
                     <p class="form-label font-semibold">w tym zobowiązania przeterminowane:</p>
-                    <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_ub_pt_ogolem"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_ub_pt_30"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_ub_pt_60"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_ub_pt_90"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_ub_pt_180"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_ub_pt_360"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_ub_pt_360plus"><span class="unit">PLN</span></div></div>
                 </div>
             </div>
             <div class="financial-period-card">
                 <h4>Stan na ostatnie F-01</h4>
                 <div class="space-y-4">
-                    <div>
-                        <label class="form-label">Zobowiązania ogółem</label>
-                        <div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div>
-                    </div>
+                    <div><label class="form-label">Zobowiązania ogółem</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_f01_ogolem"><span class="unit">PLN</span></div></div>
                     <hr>
                     <p class="form-label font-semibold">w tym zobowiązania przeterminowane:</p>
-                    <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-                    <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_f01_pt_ogolem"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_f01_pt_30"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_f01_pt_60"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_f01_pt_90"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_f01_pt_180"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_f01_pt_360"><span class="unit">PLN</span></div></div>
+                    <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field" name="zob_f01_pt_360plus"><span class="unit">PLN</span></div></div>
                 </div>
             </div>
         </div>
@@ -1089,27 +1117,27 @@
         <div class="statement-item">
             <p class="statement-text"><strong>2. Oświadczam/-y, że korzystałem/-liśmy ze środków pomocy publicznej w przeciągu ostatnich 3 lat:</strong></p>
             <div class="statement-options" id="public-aid-options">
-                 <select class="input-field" id="public_aid_select">
+                 <select class="input-field" id="public_aid_select" name="public_aid_select">
                     <option value="no">NIE</option>
                     <option value="yes">TAK</option>
                 </select>
                 <div class="input-with-unit" id="public-aid-amount-container" style="display: none; flex-grow: 1;">
-                    <input type="text" data-format="currency" class="input-field" placeholder="O łącznej wartości">
+                    <input type="text" data-format="currency" class="input-field" name="public_aid_amount" placeholder="O łącznej wartości">
                     <span class="unit">PLN</span>
                 </div>
             </div>
         </div>
         <!-- Pozostałe oświadczenia jako listy rozwijane -->
-        <div class="statement-item"><p class="statement-text"><strong>3. Oświadczam/-y, że Skarb Państwa oraz państwowe osoby prawne nie posiadają akcji/udziałów w kapitale reprezentowanego podmiotu:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie posiadają)</option><option value="nie">NIE (posiadają)</option></select></div></div>
-        <div class="statement-item"><p class="statement-text"><strong>4. Oświadczam/-y, że jestem/-śmy płatnikiem podatku VAT:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (jestem/-śmy)</option><option value="nie">NIE (nie jestem/-śmy)</option></select></div></div>
-        <div class="statement-item"><p class="statement-text"><strong>5. Oświadczam/-y, że nie znajduję/-emy się w trudnej sytuacji (nie jesteśmy zagrożonym przedsiębiorstwem):</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie znajduję/-emy się)</option><option value="nie">NIE (znajduję/-emy się)</option></select></div></div>
-        <div class="statement-item"><p class="statement-text"><strong>6. Oświadczam/-y, że nie posiadam/-y zaległości wobec ZUS:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie posiadam/-y)</option><option value="nie">NIE (posiadam/-y)</option><option value="ugoda">Ugoda z ZUS</option></select></div></div>
-        <div class="statement-item"><p class="statement-text"><strong>7. Oświadczam/-y, że nie posiadam/-y zaległości wobec Urzędu Skarbowego:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie posiadam/-y)</option><option value="nie">NIE (posiadam/-y)</option><option value="ugoda">Ugoda z US</option></select></div></div>
-        <div class="statement-item"><p class="statement-text"><strong>8. Oświadczam/-y, że posiadane rachunki bankowe są wolne od zajęć egzekucyjnych:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK</option><option value="nie">NIE</option></select></div></div>
-        <div class="statement-item"><p class="statement-text"><strong>9. Oświadczam/-y, że wobec firmy nie toczy się postępowanie upadłościowe/likwidacyjne:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie toczy się)</option><option value="nie">NIE (toczy się)</option></select></div></div>
-        <div class="statement-item"><p class="statement-text"><strong>10. Oświadczam/-y, że wobec firmy nie toczą się postępowania sądowe/administracyjne:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie toczą się)</option><option value="nie">NIE (toczą się)</option></select></div></div>
-        <div class="statement-item"><p class="statement-text"><strong>11. Oświadczam/-y, że nie zachodzą przesłanki wykluczenia z Prawa zamówień publicznych:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie zachodzą)</option><option value="nie">NIE (zachodzą)</option></select></div></div>
-        <div class="statement-item"><p class="statement-text"><strong>12. Oświadczamy, że zapoznaliśmy się z Regulaminem i akceptujemy jego warunki:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (zapoznaliśmy się i akceptujemy)</option><option value="nie">NIE</option></select></div></div>
+        <div class="statement-item"><p class="statement-text"><strong>3. Oświadczam/-y, że Skarb Państwa oraz państwowe osoby prawne nie posiadają akcji/udziałów w kapitale reprezentowanego podmiotu:</strong></p><div class="statement-options"><select class="input-field" name="statement_3"><option value="tak">TAK (nie posiadają)</option><option value="nie">NIE (posiadają)</option></select></div></div>
+        <div class="statement-item"><p class="statement-text"><strong>4. Oświadczam/-y, że jestem/-śmy płatnikiem podatku VAT:</strong></p><div class="statement-options"><select class="input-field" name="statement_4"><option value="tak">TAK (jestem/-śmy)</option><option value="nie">NIE (nie jestem/-śmy)</option></select></div></div>
+        <div class="statement-item"><p class="statement-text"><strong>5. Oświadczam/-y, że nie znajduję/-emy się w trudnej sytuacji (nie jesteśmy zagrożonym przedsiębiorstwem):</strong></p><div class="statement-options"><select class="input-field" name="statement_5"><option value="tak">TAK (nie znajduję/-emy się)</option><option value="nie">NIE (znajduję/-emy się)</option></select></div></div>
+        <div class="statement-item"><p class="statement-text"><strong>6. Oświadczam/-y, że nie posiadam/-y zaległości wobec ZUS:</strong></p><div class="statement-options"><select class="input-field" name="statement_6"><option value="tak">TAK (nie posiadam/-y)</option><option value="nie">NIE (posiadam/-y)</option><option value="ugoda">Ugoda z ZUS</option></select></div></div>
+        <div class="statement-item"><p class="statement-text"><strong>7. Oświadczam/-y, że nie posiadam/-y zaległości wobec Urzędu Skarbowego:</strong></p><div class="statement-options"><select class="input-field" name="statement_7"><option value="tak">TAK (nie posiadam/-y)</option><option value="nie">NIE (posiadam/-y)</option><option value="ugoda">Ugoda z US</option></select></div></div>
+        <div class="statement-item"><p class="statement-text"><strong>8. Oświadczam/-y, że posiadane rachunki bankowe są wolne od zajęć egzekucyjnych:</strong></p><div class="statement-options"><select class="input-field" name="statement_8"><option value="tak">TAK</option><option value="nie">NIE</option></select></div></div>
+        <div class="statement-item"><p class="statement-text"><strong>9. Oświadczam/-y, że wobec firmy nie toczy się postępowanie upadłościowe/likwidacyjne:</strong></p><div class="statement-options"><select class="input-field" name="statement_9"><option value="tak">TAK (nie toczy się)</option><option value="nie">NIE (toczy się)</option></select></div></div>
+        <div class="statement-item"><p class="statement-text"><strong>10. Oświadczam/-y, że wobec firmy nie toczą się postępowania sądowe/administracyjne:</strong></p><div class="statement-options"><select class="input-field" name="statement_10"><option value="tak">TAK (nie toczą się)</option><option value="nie">NIE (toczą się)</option></select></div></div>
+        <div class="statement-item"><p class="statement-text"><strong>11. Oświadczam/-y, że nie zachodzą przesłanki wykluczenia z Prawa zamówień publicznych:</strong></p><div class="statement-options"><select class="input-field" name="statement_11"><option value="tak">TAK (nie zachodzą)</option><option value="nie">NIE (zachodzą)</option></select></div></div>
+        <div class="statement-item"><p class="statement-text"><strong>12. Oświadczamy, że zapoznaliśmy się z Regulaminem i akceptujemy jego warunki:</strong></p><div class="statement-options"><select class="input-field" name="statement_12"><option value="tak">TAK (zapoznaliśmy się i akceptujemy)</option><option value="nie">NIE</option></select></div></div>
 
         <div class="declarations-box">
              <ol>
@@ -1166,13 +1194,19 @@
 </section>
       
 <div class="form-footer">
-    <p class="footer-note">Pola oznaczone <span class="required-asterisk">*</span> są wymagane.</p>
-    <button type="button" id="generatePdf" class="btn-primary">Generuj PDF</button>
-
     <div class="final-info-note">
         <p>Fundusz Rozwoju i Promocji Województwa Wielkopolskiego SA nie pobiera żadnych opłat za przygotowanie oraz weryfikację wniosku.</p>
     </div>
-
+    <div class="footer-actions">
+        <div class="footer-meta">
+            <p class="footer-note">Pola oznaczone <span class="required-asterisk">*</span> są wymagane.</p>
+            <p id="saveStatus" style="opacity: 0;">Zapisano ✓</p>
+        </div>
+        <div style="display: flex; gap: 0.75rem;">
+            <button type="button" id="clearFormBtn" class="btn btn-secondary">Wyczyść formularz</button>
+            <button type="button" id="generatePdf" class="btn btn-primary">Generuj PDF</button>
+        </div>
+    </div>
 </div>
     </form>
   </div>
@@ -1183,7 +1217,7 @@
         <div class="grid-col-span-2"><label class="form-label">Nazwisko / nazwa</label><input type="text" name="owner_name[]" class="input-field"></div>
         <div><label class="form-label">Udziały / akcje (%)</label><div class="input-with-unit"><input type="number" name="owner_shares_percent[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
         <div><label class="form-label">Udziały / akcje (wartość)</label><div class="input-with-unit"><input type="text" name="owner_shares_value[]" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-        <div class="remove-btn-container"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
 
@@ -1192,7 +1226,7 @@
         <div class="grid-col-span-2"><label class="form-label">Nazwa firmy</label><input type="text" name="link_name[]" class="input-field"></div>
         <div><label class="form-label">Udziały / akcje (%)</label><div class="input-with-unit"><input type="number" name="link_shares_percent[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
         <div><label class="form-label">Udziały / akcje (wartość)</label><div class="input-with-unit"><input type="text" name="link_shares_value[]" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
-        <div class="remove-btn-container"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
 
@@ -1201,7 +1235,7 @@
         <div class="grid-col-span-2"><label class="form-label">Rodzaje działalności</label><input type="text" name="pkd_desc[]" class="input-field"></div>
         <div><label class="form-label">PKD</label><input type="text" name="pkd_code[]" class="input-field"></div>
         <div><label class="form-label">Procentowy udział</label><div class="input-with-unit"><input type="number" name="pkd_percent[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
-        <div class="remove-btn-container"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
 
@@ -1209,8 +1243,8 @@
     <div class="dynamic-row form-grid">
         <div class="grid-col-span-2"><label class="form-label">Nazwa kontrahenta</label><input type="text" name="contractor_name[]" class="input-field"></div>
         <div class="grid-col-span-2"><label class="form-label">Zakres prac / dostaw</label><input type="text" name="contractor_scope[]" class="input-field"></div>
-        <div class="grid-col-span-2"><label class="form-label">Udział w całości dostaw</label><div class="input-with-unit"><input type="number" name="contractor_share[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
-        <div class="remove-btn-container"><button type="button" class="btn-remove">Usuń</button></div>
+        <div><label class="form-label">Udział w całości dostaw</label><div class="input-with-unit"><input type="number" name="contractor_share[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
 
@@ -1218,8 +1252,8 @@
     <div class="dynamic-row form-grid">
         <div><label class="form-label">Imię i nazwisko osoby</label><input type="text" name="org_link_person[]" class="input-field"></div>
         <div><label class="form-label">Nazwa firmy</label><input type="text" name="org_link_company[]" class="input-field"></div>
-        <div class="grid-col-span-2"><label class="form-label">% udziałów</label><div class="input-with-unit"><input type="number" name="org_link_share[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <div><label class="form-label">% udziałów</label><div class="input-with-unit"><input type="number" name="org_link_share[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
   
@@ -1227,7 +1261,7 @@
     <div class="dynamic-row form-grid">
         <div><label class="form-label">Nazwa banku</label><input type="text" name="bank_name[]" required class="input-field"></div>
         <div><label class="form-label">Numer rachunku</label><input type="text" name="account_number[]" data-validation="nrb" data-format="nrb" required title="Podaj 26 cyfr numeru rachunku." class="input-field"></div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
 
@@ -1238,7 +1272,7 @@
         <div><label class="form-label">Wysokość / kwota do spłaty</label><div class="input-with-unit"><input type="text" data-format="currency" name="credit_amount[]" class="input-field"><span class="unit">PLN</span></div></div>
         <div><label class="form-label">Zabezpieczenie</label><input type="text" name="credit_security[]" placeholder="np. hipoteka, weksel" class="input-field"></div>
         <div><label class="form-label">Termin wygaśnięcia</label><input type="date" name="credit_expiry[]" class="input-field"></div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
   
@@ -1249,7 +1283,7 @@
         <div><label class="form-label">Przedmiot leasingu</label><input type="text" name="lease_subject[]" class="input-field"></div>
         <div><label class="form-label">Kwota leasingu</label><div class="input-with-unit"><input type="text" data-format="currency" name="lease_amount[]" class="input-field"><span class="unit">PLN</span></div></div>
         <div><label class="form-label">Miesięczna rata</label><div class="input-with-unit"><input type="text" data-format="currency" name="lease_rate[]" class="input-field"><span class="unit">PLN</span></div></div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
 
@@ -1262,7 +1296,7 @@
         <div><label class="form-label">Suma wykorzystanego limitu</label><div class="input-with-unit"><input type="text" data-format="currency" name="limit_used[]" class="input-field"><span class="unit">PLN</span></div></div>
         <div><label class="form-label">Termin wygaśnięcia limitu</label><input type="date" name="limit_expiry[]" class="input-field"></div>
         <div><label class="form-label">Termin wygaśnięcia ostatniej gwarancji</label><input type="date" name="limit_last_guarantee_expiry[]" class="input-field"></div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
 
@@ -1272,14 +1306,14 @@
         <div><label class="form-label">Wysokość zobowiązania</label><div class="input-with-unit"><input type="text" data-format="currency" name="surety_amount[]" class="input-field"><span class="unit">PLN</span></div></div>
         <div><label class="form-label">Na rzecz</label><input type="text" name="surety_for[]" class="input-field"></div>
         <div><label class="form-label">Termin wygaśnięcia</label><input type="date" name="surety_expiry[]" class="input-field"></div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
 
   <template id="subsidy-template">
     <div class="dynamic-row form-grid" style="grid-template-columns: 1fr auto; align-items: end;">
         <div><label class="form-label">Kwota dotacji</label><div class="input-with-unit"><input type="text" data-format="currency" name="subsidy_amount[]" class="input-field"><span class="unit">PLN</span></div></div>
-        <div class="remove-btn-container" style="padding-bottom: 0.5rem;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove" style="padding: 0.5rem 1rem; margin-bottom: 0;">Usuń</button>
     </div>
   </template>
 
@@ -1293,7 +1327,7 @@
                 <option value="">-- wybierz --</option><option value="TAK">TAK</option><option value="NIE">NIE</option>
             </select>
         </div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
 
@@ -1306,7 +1340,7 @@
                 <option value="">-- wybierz --</option><option value="TAK">TAK</option><option value="NIE">NIE</option>
             </select>
         </div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
 
@@ -1317,7 +1351,7 @@
         <div><label class="form-label">Przybliżona wartość rynkowa</label><div class="input-with-unit"><input type="text" data-format="currency" name="enc_market_value[]" class="input-field"><span class="unit">PLN</span></div></div>
         <div><label class="form-label">Wysokość obciążenia</label><div class="input-with-unit"><input type="text" data-format="currency" name="enc_amount[]" class="input-field"><span class="unit">PLN</span></div></div>
         <div class="grid-col-span-2"><label class="form-label">Forma obciążenia</label><input type="text" name="enc_type[]" placeholder="np. hipoteka, zastaw" class="input-field"></div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
   </template>
 
@@ -1339,7 +1373,7 @@
              <label class="form-label">Termin wykonania</label>
             <input type="date" name="cc_date[]" class="input-field">
         </div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
 </template>
 
@@ -1361,7 +1395,7 @@
             <label class="form-label">Przyczyny zgłoszenia roszczenia</label>
             <textarea name="claim_reason[]" class="input-field" rows="3"></textarea>
         </div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
 </template>
 
@@ -1391,30 +1425,180 @@
             <label class="form-label">Stopień realizacji kontraktu</label>
             <div class="input-with-unit"><input type="number" name="ongoing_contract_progress[]" class="input-field" min="0" max="100"><span class="unit">%</span></div>
         </div>
-        <div class="remove-btn-container" style="grid-column: 1 / -1; text-align: right;"><button type="button" class="btn-remove">Usuń</button></div>
+        <button type="button" class="btn-remove">Usuń</button>
     </div>
 </template>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
         const App = {
+            // ... istniejące właściwości
             form: document.getElementById('applicationForm'),
             nipInput: document.getElementById('nip'),
             nipStatus: document.getElementById('nipStatus'),
             generatePdfBtn: document.getElementById('generatePdf'),
+            clearFormBtn: document.getElementById('clearFormBtn'),
+            saveStatus: document.getElementById('saveStatus'),
             copyCheckbox: document.getElementById('copy-from-representative'),
+            
+            // Nowe właściwości dla zapisu danych
+            storageKey: 'applicationFormData',
+            saveTimeout: null,
+
+            // --- FUNKCJE ZAPISU I WCZYTYWANIA DANYCH ---
+
+            /**
+             * Zbiera wszystkie dane z formularza i zapisuje je w localStorage.
+             */
+            saveData() {
+                const formData = {
+                    elements: {},
+                    dynamicSections: {}
+                };
+
+                // Zapisz wartości standardowych pól
+                this.form.querySelectorAll('input, select, textarea').forEach(el => {
+                    if (el.closest('.dynamic-row')) return; // Pomiń pola w dynamicznych wierszach
+                    const key = el.id || el.name;
+                    if (!key) return;
+
+                    if (el.type === 'checkbox') {
+                        formData.elements[key] = { value: el.value, checked: el.checked };
+                    } else if (el.type === 'radio') {
+                        if (el.checked) {
+                           formData.elements[el.name] = { value: el.value, checked: true };
+                        }
+                    } else {
+                        formData.elements[key] = { value: el.value };
+                    }
+                });
+
+                // Zapisz dane z dynamicznych sekcji
+                this.form.querySelectorAll('[data-container]').forEach(button => {
+                    const containerId = button.dataset.container;
+                    const container = document.getElementById(containerId);
+                    if (!container) return;
+                    
+                    const sectionData = [];
+                    container.querySelectorAll('.dynamic-row').forEach(row => {
+                        const rowData = {};
+                        row.querySelectorAll('input, select, textarea').forEach(input => {
+                            if (input.name) {
+                                // Używamy unikalnego klucza dla każdego pola w wierszu
+                                const fieldKey = input.name.replace('[]', '');
+                                rowData[fieldKey] = input.type === 'checkbox' ? input.checked : input.value;
+                            }
+                        });
+                        sectionData.push(rowData);
+                    });
+                    formData.dynamicSections[containerId] = sectionData;
+                });
+
+
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(formData));
+                    // Pokaż status zapisu
+                    this.saveStatus.style.opacity = '1';
+                    if (this.saveTimeout) clearTimeout(this.saveTimeout);
+                    this.saveTimeout = setTimeout(() => {
+                        this.saveStatus.style.opacity = '0';
+                    }, 2000);
+                } catch (error) {
+                    console.error("Błąd zapisu danych do localStorage:", error);
+                }
+            },
+            
+            /**
+             * Wczytuje dane z localStorage i wypełnia nimi formularz.
+             */
+            loadData() {
+                try {
+                    const savedDataJSON = localStorage.getItem(this.storageKey);
+                    if (!savedDataJSON) return;
+                    
+                    const formData = JSON.parse(savedDataJSON);
+
+                    // Wypełnij standardowe pola
+                    for (const key in formData.elements) {
+                        const el = document.getElementById(key) || document.getElementsByName(key)[0];
+                        const data = formData.elements[key];
+                        if (!el) continue;
+
+                        if (el.type === 'checkbox') {
+                            el.checked = data.checked;
+                        } else if (el.type === 'radio') {
+                             document.querySelectorAll(`input[name="${el.name}"]`).forEach(radio => {
+                                if(radio.value === data.value) radio.checked = true;
+                            });
+                        } else {
+                            el.value = data.value;
+                        }
+                        // Wywołaj event, aby uruchomić inne skrypty (np. walidację, formatowanie)
+                        el.dispatchEvent(new Event('input', { bubbles: true }));
+                        el.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+
+                    // Odtwórz dynamiczne sekcje
+                    for (const containerId in formData.dynamicSections) {
+                        const sectionData = formData.dynamicSections[containerId];
+                        const addButton = this.form.querySelector(`[data-container="${containerId}"]`);
+                        if (!addButton) continue;
+                        
+                        const templateId = addButton.dataset.template;
+
+                        sectionData.forEach(rowData => {
+                            this.createDynamicRow(templateId, containerId);
+                            const newRow = document.querySelector(`#${containerId} .dynamic-row:last-child`);
+                            if (newRow) {
+                                for (const fieldKey in rowData) {
+                                    const input = newRow.querySelector(`[name="${fieldKey}[]"], [name="${fieldKey}"]`);
+                                    if(input) {
+                                       if (input.type === 'checkbox') {
+                                           input.checked = rowData[fieldKey];
+                                       } else {
+                                           input.value = rowData[fieldKey];
+                                       }
+                                       input.dispatchEvent(new Event('input', { bubbles: true }));
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                } catch (error) {
+                    console.error("Błąd wczytywania danych z localStorage:", error);
+                }
+            },
+
+            /**
+             * Czyści dane z localStorage i resetuje formularz.
+             */
+            clearData() {
+                 if (confirm("Czy na pewno chcesz wyczyścić cały formularz i usunąć zapisane dane? Tej operacji nie można cofnąć.")) {
+                    try {
+                        localStorage.removeItem(this.storageKey);
+                        this.form.reset();
+                        // Przeładuj stronę, aby zapewnić czysty stan
+                        window.location.reload();
+                    } catch (error) {
+                         console.error("Błąd czyszczenia danych:", error);
+                         alert("Wystąpił błąd podczas czyszczenia danych.");
+                    }
+                 }
+            },
+
+
+            // --- ISTNIEJĄCE FUNKCJE (zintegrowane z zapisem/wczytywaniem) ---
 
             async fetchCompanyDataByNIP(nip) {
                 const today = new Date().toISOString().split('T')[0];
-                // Uwaga: Używanie publicznego proxy CORS do ominięcia problemów z żądaniami z przeglądarki.
-                // W środowisku produkcyjnym zalecane jest własne rozwiązanie po stronie serwera.
                 const apiUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://wl-api.mf.gov.pl/api/search/nip/${nip}?date=${today}`)}`;
                 const response = await fetch(apiUrl);
                 if (!response.ok) throw new Error(`Błąd serwera: ${response.status}`);
                 const apiData = await response.json();
-                const data = JSON.parse(apiData.contents); // Rzeczywiste dane są zagnieżdżone
+                const data = JSON.parse(apiData.contents);
                 
-                if (data.code === 'WL_010') { // Kod błędu API dla nieznalezionego NIP
+                if (data.code === 'WL_010') {
                     throw new Error('Nie znaleziono firmy o podanym numerze NIP.');
                 }
 
@@ -1465,8 +1649,7 @@
 
                 const clone = template.content.cloneNode(true);
                 
-                // Przypisanie listenerów do nowo utworzonych pól
-                clone.querySelectorAll('.input-field').forEach(input => {
+                clone.querySelectorAll('.input-field, .form-checkbox, .form-radio').forEach(input => {
                     input.addEventListener('input', (event) => {
                         this.formatInput(event.target);
                         this.validateField(event.target);
@@ -1478,10 +1661,10 @@
             },
             
             updateTotalLimit() {
-                const limitWadialny = parseFloat(document.getElementById('limit_wadialny').value.replace(/\s/g, '')) || 0;
-                const limitKontrakt = parseFloat(document.getElementById('limit_kontrakt').value.replace(/\s/g, '')) || 0;
+                const limitWadialny = parseFloat(document.getElementById('limit_wadialny').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+                const limitKontrakt = parseFloat(document.getElementById('limit_kontrakt').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
                 const total = limitWadialny + limitKontrakt;
-                document.getElementById('limit_lacznie').value = total > 0 ? total.toLocaleString('pl-PL') + ' PLN' : '';
+                document.getElementById('limit_lacznie').value = total > 0 ? total.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
             },
 
             updateOngoingContractsTotal() {
@@ -1489,14 +1672,14 @@
                 let remainingTotal = 0;
 
                 document.querySelectorAll('.sum-source-contract-value').forEach(input => {
-                    valueTotal += parseFloat(input.value.replace(/[^\d,-]/g, '').replace(',', '.')) || 0;
+                    valueTotal += parseFloat(input.value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
                 });
                 document.querySelectorAll('.sum-source-contract-remaining').forEach(input => {
-                    remainingTotal += parseFloat(input.value.replace(/[^\d,-]/g, '').replace(',', '.')) || 0;
+                    remainingTotal += parseFloat(input.value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
                 });
 
-                document.getElementById('ongoing-contracts-value-total').value = valueTotal > 0 ? valueTotal.toLocaleString('pl-PL') : '';
-                document.getElementById('ongoing-contracts-remaining-total').value = remainingTotal > 0 ? remainingTotal.toLocaleString('pl-PL') : '';
+                document.getElementById('ongoing-contracts-value-total').value = valueTotal > 0 ? valueTotal.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
+                document.getElementById('ongoing-contracts-remaining-total').value = remainingTotal > 0 ? remainingTotal.toLocaleString('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '';
             },
 
             isValidNrb(nrb) {
@@ -1517,16 +1700,17 @@
                 if (!formatType) return;
                 
                 let rawValue = input.value;
-                let formattedValue = '';
+                let formattedValue = rawValue;
                 
                 switch(formatType) {
                     case 'currency':
-                        rawValue = rawValue.replace(/[^\d]/g, '');
+                        rawValue = rawValue.replace(/[^\d,.]/g, '').replace(',', '.');
                         if (rawValue === '') {
                             formattedValue = '';
                         } else {
-                            const num = parseInt(rawValue, 10);
-                            formattedValue = isNaN(num) ? '' : num.toLocaleString('pl-PL');
+                            const parts = rawValue.split('.');
+                            const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+                            formattedValue = integerPart + (parts[1] !== undefined ? ',' + parts[1].substring(0,2) : '');
                         }
                         break;
                     case 'nrb':
@@ -1568,13 +1752,21 @@
             },
 
             initializeRealTimeValidation() {
-                this.form.querySelectorAll('.input-field').forEach(input => {
-                    input.addEventListener('input', (event) => this.validateField(event.target));
-                    input.addEventListener('blur', (event) => this.validateField(event.target));
+                this.form.querySelectorAll('input, select, textarea').forEach(input => {
+                    const handler = (event) => this.validateField(event.target);
+                    input.addEventListener('input', handler);
+                    input.addEventListener('change', handler);
+                    input.addEventListener('blur', handler);
                 });
             },
 
             validateField(field) {
+                 if (field.closest('.disabled-section')) {
+                    field.classList.remove('is-invalid');
+                    field.setCustomValidity("");
+                    return;
+                }
+
                 if (!field.hasAttribute('required') && field.value.length === 0) {
                     field.classList.remove('is-invalid');
                     field.setCustomValidity("");
@@ -1595,14 +1787,16 @@
             
             validateForm() {
                 let allValid = true;
-                const requiredFields = this.form.querySelectorAll('[required]');
+                const fieldsToValidate = this.form.querySelectorAll('[required]:not(:disabled)');
                 
-                requiredFields.forEach(field => {
+                fieldsToValidate.forEach((field, index) => {
                     this.validateField(field);
                     if (!field.checkValidity()) {
+                        if(allValid) { // Przewiń tylko do pierwszego błędnego pola
+                           field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                           field.focus();
+                        }
                         allValid = false;
-                        // Przewiń do pierwszego błędnego pola
-                        if(allValid) field.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }
                 });
 
@@ -1613,11 +1807,11 @@
             },
 
             generatePdfFromForm() {
-                // Ta funkcja jest placeholderem.
-                // W docelowym rozwiązaniu znajdzie się tu logika generowania PDF
                 alert('Funkcja generowania PDF jest w trakcie przygotowania.');
                 console.log("Attempting to generate PDF...");
             },
+            
+            // --- GŁÓWNA FUNKCJA INICJALIZUJĄCA ---
 
             init() {
                 if (!this.form) return;
@@ -1625,7 +1819,6 @@
                 this.initializeInputFormatters();
                 this.initializeRealTimeValidation();
 
-                // POPRAWKA: Logika dla pomocy publicznej (działa na select, a nie na radio)
                 const publicAidSelect = document.getElementById('public_aid_select');
                 if (publicAidSelect) {
                     publicAidSelect.addEventListener('change', (e) => {
@@ -1665,30 +1858,35 @@
                 });
 
                 this.copyCheckbox.addEventListener('change', (e) => {
-                    const contactInputs = document.querySelectorAll('#contact-person-fields input');
+                    const contactSection = document.getElementById('contact-person-fields');
+                    const contactInputs = contactSection.querySelectorAll('input');
+                    
                     if (e.target.checked) {
                         this.fillFormField('contact_name', document.getElementById('rep_name').value);
                         this.fillFormField('contact_position', document.getElementById('rep_position').value);
                         this.fillFormField('contact_phone', document.getElementById('rep_phone').value);
                         this.fillFormField('contact_email', document.getElementById('rep_email').value);
-                        contactInputs.forEach(input => { input.disabled = true; this.validateField(input); });
+                        contactInputs.forEach(input => { input.disabled = true; input.removeAttribute('required'); this.validateField(input); });
+                        contactSection.classList.add('disabled-section');
                     } else {
-                        contactInputs.forEach(input => { input.value = ''; input.disabled = false; this.validateField(input); });
+                        contactInputs.forEach(input => { input.value = ''; input.disabled = false; });
+                        contactSection.classList.remove('disabled-section');
                     }
                 });
                 
                 this.form.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('btn-add')) {
+                    if (e.target.matches('.btn-add')) {
                         const templateId = e.target.dataset.template;
                         const containerId = e.target.dataset.container;
                         this.createDynamicRow(templateId, containerId);
                     }
-                    if (e.target.classList.contains('btn-remove')) {
+                    if (e.target.matches('.btn-remove')) {
                         e.target.closest('.dynamic-row').remove();
                         // Po usunięciu wiersza przelicz sumy, jeśli to konieczne
                         if(e.target.closest('#ongoing-contracts-container')){
                              this.updateOngoingContractsTotal();
                         }
+                         this.saveData(); // Zapisz stan po usunięciu
                     }
                 });
 
@@ -1697,22 +1895,21 @@
                         const sectionId = e.target.dataset.controls;
                         const section = document.getElementById(sectionId);
                         if (section) {
-                            section.classList.toggle('disabled-section', e.target.checked);
-                            // Wyczyszczenie i usunięcie walidacji z pól w wyłączonej sekcji
+                            const isChecked = e.target.checked;
+                            section.classList.toggle('disabled-section', isChecked);
                             section.querySelectorAll('input, select, textarea').forEach(field => {
-                                if(e.target.checked) field.removeAttribute('required');
-                                else if (field.closest('template') === null) field.setAttribute('required', 'required'); // Przywróć, jeśli nie jest w szablonie
+                                field.disabled = isChecked;
                                 this.validateField(field);
                             });
+                            section.querySelector('.btn-add')?.toggleAttribute('disabled', isChecked);
                         }
                     });
                 });
-
-                // POPRAWKA: Listener dla sumowania kontraktów przeniesiony poza pętlę
+                
                 const contractsContainer = document.getElementById('ongoing-contracts-container');
                 if (contractsContainer) {
                     contractsContainer.addEventListener('input', (e) => {
-                        if (e.target.classList.contains('sum-source-contract-value') || e.target.classList.contains('sum-source-contract-remaining')) {
+                        if (e.target.matches('.sum-source-contract-value, .sum-source-contract-remaining')) {
                             this.updateOngoingContractsTotal();
                         }
                     });
@@ -1727,6 +1924,16 @@
                         this.generatePdfFromForm();
                     }
                 });
+
+                // --- NOWE LISTENERY DLA ZAPISU I CZYSZCZENIA ---
+                // Używamy "input" dla natychmiastowej reakcji i "change" dla select/checkbox
+                this.form.addEventListener('input', () => this.saveData());
+                this.form.addEventListener('change', () => this.saveData());
+
+                this.clearFormBtn.addEventListener('click', () => this.clearData());
+
+                // --- WCZYTANIE DANYCH PRZY STARCIE ---
+                this.loadData();
             }
         };
 
