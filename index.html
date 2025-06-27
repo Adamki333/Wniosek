@@ -35,10 +35,10 @@
     .wizard-container { width: 100%; max-width: 64rem; background-color: #ffffff; border-radius: 1rem; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); display: flex; flex-direction: column; max-height: 90vh; }
     
     .progress-bar { display: flex; padding: 1rem 2rem; border-bottom: 1px solid var(--gray-200); background-color: #fff; flex-shrink: 0; }
-    .progress-step { flex: 1; text-align: center; position: relative; }
+    .progress-step { flex: 1; text-align: center; position: relative; cursor: pointer; }
     .progress-step .step-circle { width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: var(--gray-200); color: var(--gray-500); display: flex; align-items: center; justify-content: center; font-weight: 600; margin: 0 auto; transition: all 0.3s ease; border: 2px solid transparent; }
-    .progress-step .step-label { margin-top: 0.5rem; font-size: 0.8rem; font-weight: 500; color: var(--gray-500); transition: all 0.3s ease; }
-    .progress-step:not(:last-child)::after { content: ''; position: absolute; top: 1.25rem; left: 50%; width: 100%; height: 2px; background-color: var(--gray-200); transform: translateY(-50%); z-index: -1; }
+    .progress-step .step-label { margin-top: 0.5rem; font-size: 0.75rem; font-weight: 500; color: var(--gray-500); transition: all 0.3s ease; }
+    .progress-step:not(:last-child)::after { content: ''; position: absolute; top: 1.25rem; left: 50%; width: 100%; height: 2px; background-color: var(--gray-200); transform: translateY(-50%); z-index: -1; transition: background-color 0.3s ease; }
     
     .progress-step.active .step-circle { background-color: var(--primary-light); color: var(--primary); border-color: var(--primary); }
     .progress-step.active .step-label { color: var(--primary); font-weight: 600; }
@@ -66,7 +66,7 @@
     .dynamic-row { position: relative; margin-bottom: 0.75rem; padding: 1.25rem; padding-top: 2.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; background-color: #fafafa; }
     .btn-remove { position: absolute; top: 0.5rem; right: 0.5rem; padding: 0.25rem 1rem; background-color: #dc2626; color: white; font-weight: 600; border-radius: 0.375rem; transition: background-color 0.2s; cursor: pointer; border: none; }
     .btn-remove:hover { background-color: #b91c1c; }
-    .btn-add { padding: 0.25rem 1rem; background-color: #16a34a; color: white; font-weight: 600; border-radius: 0.375rem; transition: background-color 0.2s; cursor: pointer; border: none; }
+    .btn-add { padding: 0.5rem 1rem; background-color: #16a34a; color: white; font-weight: 600; border-radius: 0.375rem; transition: background-color 0.2s; cursor: pointer; border: none; }
     .btn-add:hover { background-color: #15803d; }
     
     .form-footer { padding: 1.5rem 3rem; border-top: 1px solid var(--gray-200); background-color: #fff; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
@@ -104,7 +104,7 @@
         <div class="subsection">
           <h3 class="subsection-header">Dane adresowe</h3>
           <div class="form-grid">
-            <div><label for="nip" class="form-label required">NIP</label><input type="text" id="nip" name="nip" required class="input-field" /></div>
+            <div><label for="nip" class="form-label required">NIP</label><input type="text" id="nip" name="nip" required class="input-field" /><p id="nipStatus" style="font-size: 0.8rem; margin-top: 4px;"></p></div>
             <div><label for="regon" class="form-label">REGON</label><input type="text" id="regon" name="regon" class="input-field" /></div>
             <div class="grid-col-span-2"><label for="fullName" class="form-label required">Pełna nazwa firmy</label><input type="text" id="fullName" name="fullName" required class="input-field" /></div>
             <div class="grid-col-span-2"><p class="form-label required">Adres siedziby</p></div>
@@ -137,10 +137,8 @@
          <div class="subsection">
             <h3 class="subsection-header">Wnioskowany limit poręczeń</h3>
             <div class="form-grid">
-                <label for="limit_wadialny" class="form-label">Wadialny</label>
-                <input type="text" id="limit_wadialny" class="input-field">
-                <label for="limit_kontrakt" class="form-label">Kontraktowy</label>
-                <input type="text" id="limit_kontrakt" class="input-field">
+                <div><label for="limit_wadialny" class="form-label">Wadialny</label><input type="text" id="limit_wadialny" class="input-field"></div>
+                <div><label for="limit_kontrakt" class="form-label">Kontraktowy</label><input type="text" id="limit_kontrakt" class="input-field"></div>
             </div>
         </div>
       </div>
@@ -166,7 +164,7 @@
         <p>Proszę potwierdzić poniższe oświadczenie, aby kontynuować.</p>
         <div style="margin-top: 2rem; padding: 1rem; background-color: var(--primary-light); border-radius: 0.5rem;">
              <label style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                <input type="checkbox" name="master_consent" required style="margin-top: 5px;">
+                <input type="checkbox" name="master_consent" required style="margin-top: 5px; flex-shrink: 0;">
                 <span style="font-size: 0.9rem;">
                     <strong>Oświadczam, że zapoznałem/am się z regulaminem i akceptuję jego treść, a wszystkie podane dane są zgodne z prawdą.</strong>
                 </span>
@@ -209,21 +207,12 @@
             init() {
                 this.form = document.getElementById('applicationForm');
                 this.loader = document.getElementById('loader-overlay');
+                this.nipInput = document.getElementById('nip');
+                this.nipStatus = document.getElementById('nipStatus');
+                
                 this.initWizard();
-                document.getElementById('generatePdf').addEventListener('click', () => this.generatePdf());
-
-                this.form.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('btn-add')) {
-                        const template = document.getElementById(e.target.dataset.template);
-                        const container = document.getElementById(e.target.dataset.container);
-                        if (template && container) {
-                            container.appendChild(template.content.cloneNode(true));
-                        }
-                    }
-                    if (e.target.classList.contains('btn-remove')) {
-                        e.target.closest('.dynamic-row').remove();
-                    }
-                });
+                this.initEventListeners();
+                this.loadProgress();
             },
 
             initWizard() {
@@ -236,9 +225,41 @@
                 
                 this.renderProgressBar();
                 this.updateWizardState();
+            },
 
+            initEventListeners() {
                 this.nextBtn.addEventListener('click', () => this.changeStep(1));
                 this.prevBtn.addEventListener('click', () => this.changeStep(-1));
+                this.generatePdfBtn.addEventListener('click', () => this.generatePdf());
+
+                this.form.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('btn-add')) {
+                        const template = document.getElementById(e.target.dataset.template);
+                        const container = document.getElementById(e.target.dataset.container);
+                        if (template && container) {
+                            container.appendChild(template.content.cloneNode(true));
+                        }
+                    }
+                    if (e.target.classList.contains('btn-remove')) {
+                        e.target.closest('.dynamic-row').remove();
+                        this.saveProgress();
+                    }
+                });
+                
+                // Zapisywanie postępu przy zmianie danych
+                this.form.addEventListener('input', () => this.saveProgress());
+
+                // Pobieranie danych po NIP
+                let nipTimeout;
+                this.nipInput.addEventListener('input', () => {
+                    clearTimeout(nipTimeout);
+                    nipTimeout = setTimeout(() => {
+                        const nip = this.nipInput.value.replace(/[^\d]/g, '');
+                        if (nip.length === 10) {
+                            this.fetchCompanyDataByNIP(nip);
+                        }
+                    }, 1000);
+                });
             },
 
             renderProgressBar() {
@@ -268,7 +289,7 @@
                     step.classList.toggle('completed', stepNum < this.currentStep);
                 });
 
-                this.prevBtn.disabled = this.currentStep === 1;
+                this.prevBtn.style.display = this.currentStep === 1 ? 'none' : 'inline-block';
                 this.nextBtn.style.display = this.currentStep === this.totalSteps ? 'none' : 'inline-block';
                 this.generatePdfBtn.style.display = this.currentStep === this.totalSteps ? 'inline-block' : 'none';
             },
@@ -333,6 +354,8 @@
                             checkPageBreak(15); doc.setFontSize(10); doc.setTextColor('#6b7280');
                             doc.text(emptyText, MARGIN, yPos); yPos += 10; return;
                         }
+                        // Poprawiona obsługa błędu - użycie globalnego obiektu jspdf
+                        window.jspdf.jsPDF.autoTable.previous = false;
                         doc.autoTable({
                             head: [headers], body: data, startY: yPos, theme: 'grid',
                             headStyles: { fillColor: [243, 244, 246], textColor: [29, 41, 51], font: 'Helvetica', fontStyle: 'bold' },
@@ -360,14 +383,14 @@
                     };
 
                     drawSectionTitle('I. Dane wnioskodawcy');
-                    drawSubSectionTitle('1. Dane adresowe');
+                    drawSubSectionTitle('Dane adresowe');
                     drawKeyValue('Pełna nazwa firmy:', getVal('fullName'));
                     drawKeyValue('NIP:', getVal('nip'));
                     drawKeyValue('REGON:', getVal('regon'));
                     drawKeyValue('Telefon:', getVal('phone'));
                     drawKeyValue('E-mail:', getVal('email'));
                     
-                    drawSubSectionTitle('2. Reprezentacja i kontakt');
+                    drawSubSectionTitle('Reprezentacja i kontakt');
                     drawKeyValue('Osoba reprezentująca:', getVal('rep_name'));
                     drawKeyValue('Telefon (reprezentant):', getVal('rep_phone'));
                     drawKeyValue('E-mail (reprezentant):', getVal('rep_email'));
@@ -403,6 +426,82 @@
                 field.classList.toggle('is-invalid', !isValid);
                 return isValid;
             },
+
+            async fetchCompanyDataByNIP(nip) {
+                this.setNipStatus('Pobieranie danych...', 'info');
+                const today = new Date().toISOString().split('T')[0];
+                const apiUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://wl-api.mf.gov.pl/api/search/nip/${nip}?date=${today}`)}`;
+                try {
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error(`Błąd serwera proxy`);
+                    const apiData = await response.json();
+                    const data = JSON.parse(apiData.contents);
+                    if (data.result?.subject) {
+                        const subject = data.result.subject;
+                        this.fillFormField('fullName', subject.name || '');
+                        this.fillFormField('regon', subject.regon || '');
+                        if(subject.residenceAddress) {
+                            this.fillFormField('street', subject.residenceAddress.ulica || '');
+                            this.fillFormField('building_number', subject.residenceAddress.nrDomu || '');
+                            this.fillFormField('postal_code', subject.residenceAddress.kodPocztowy || '');
+                            this.fillFormField('city', subject.residenceAddress.miejscowosc || '');
+                        }
+                        this.setNipStatus('Dane firmy zostały pobrane.', 'success');
+                    } else {
+                        throw new Error('Nie znaleziono firmy.');
+                    }
+                } catch (error) {
+                    this.setNipStatus(error.message, 'error');
+                }
+            },
+
+            fillFormField(id, value) {
+                const element = document.getElementById(id);
+                if (element && value != null) element.value = value;
+            },
+
+            setNipStatus(message, type = 'info') {
+                if (!this.nipStatus) return;
+                this.nipStatus.textContent = message;
+                const colors = { info: '#6b7280', success: '#22c55e', error: '#ef4444' };
+                this.nipStatus.style.color = colors[type];
+            },
+
+            saveProgress() {
+                const formData = new FormData(this.form);
+                const data = {};
+                for (let [key, value] of formData.entries()) {
+                    if (key.endsWith('[]')) {
+                        const cleanKey = key.slice(0, -2);
+                        if (!data[cleanKey]) data[cleanKey] = [];
+                        data[cleanKey].push(value);
+                    } else {
+                        data[key] = value;
+                    }
+                }
+                localStorage.setItem('formProgress', JSON.stringify(data));
+            },
+
+            loadProgress() {
+                const savedData = localStorage.getItem('formProgress');
+                if (!savedData) return;
+                const data = JSON.parse(savedData);
+                for (const key in data) {
+                    const elements = this.form.querySelectorAll(`[name="${key}"]`);
+                    if (elements.length > 0) {
+                        elements[0].value = data[key];
+                    } else if (Array.isArray(data[key])) {
+                        // Obsługa dynamicznych pól
+                        const containerId = `${key.split('_')[0]}-container`;
+                        const templateId = `${key.split('_')[0]}-template`;
+                        const container = document.getElementById(containerId);
+                        if(container) {
+                            // Ta część wymagałaby bardziej złożonej logiki do odtworzenia dynamicznych wierszy
+                            // Na razie zostawiamy to uproszczone
+                        }
+                    }
+                }
+            }
         };
 
         App.init();
