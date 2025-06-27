@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Wniosek PDF</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #d90000;
+            --text-color-dark: #1f2937;
+            --text-color-medium: #4b5563;
+            --text-color-light: #6b7280;
+            --border-color: #e5e7eb;
+            --background-light: #f9fafb;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color-medium);
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+            font-size: 10pt;
+            line-height: 1.5;
+        }
+        .pdf-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            margin: 0 auto;
+            background: white;
+            box-sizing: border-box;
+            page-break-after: always;
+        }
+        .pdf-page:last-child {
+            page-break-after: avoid;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        p, h1, h2, h3, h4 {
+            margin: 0;
+            padding: 0;
+        }
+        .section-wrapper {
+            page-break-inside: avoid;
+            margin-bottom: 20px;
+        }
+        .header-table {
+            width: 100%;
+            margin-bottom: 25px;
+        }
+        .header-logo img {
+            max-width: 180px;
+            height: auto;
+        }
+        .header-title-container {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .header-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .header-date {
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--text-color-light);
+            vertical-align: top;
+        }
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            padding-left: 12px;
+            padding-bottom: 4px;
+            border-left: 4px solid var(--primary-color);
+            margin-top: 25px;
+            margin-bottom: 20px;
+            color: var(--text-color-dark);
+        }
+        .subsection-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            color: var(--text-color-dark);
+        }
+        /* Tabela z danymi podstawowymi */
+        .data-table {
+            width: 100%;
+            font-size: 0.95rem;
+            border-spacing: 0;
+        }
+        .data-table tr {
+            page-break-inside: avoid;
+        }
+        .data-table td {
+            padding: 8px 5px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        .data-table-label {
+            color: var(--text-color-light);
+            font-weight: 500;
+            width: 35%;
+        }
+        .data-table-value {
+            text-align: left;
+            font-weight: 500;
+            color: var(--text-color-dark);
+        }
+        /* Tabela z obramowaniem */
+        .bordered-table {
+            width: 100%;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .bordered-table th, .bordered-table td {
+            padding: 8px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .bordered-table thead th {
+            background-color: var(--background-light);
+            font-weight: 600;
+            color: var(--text-color-dark);
+            border-bottom-width: 2px;
+        }
+        .bordered-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .bordered-table tbody tr:nth-child(even) td {
+            background-color: var(--background-light);
+        }
+        /* Oświadczenia */
+        .statement-box {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-top: 15px;
+        }
+        .statement-box p {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-left: 3px solid var(--border-color);
+            background-color: var(--background-light);
+            border-radius: 0 4px 4px 0;
+        }
+        .statement-box p strong {
+            color: var(--text-color-dark);
+        }
+        .statement-box p i {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        /* Stopka */
+        .footer {
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: var(--text-color-light);
+            text-align: right;
+        }
+        /* Placeholder dla pustych tabel */
+        .empty-row-placeholder {
+            text-align: center;
+            color: #9ca3af;
+            font-style: italic;
+            padding: 20px;
+            background-color: var(--background-light);
+        }
+    </style>
+</head>
+<body>
+    <div id="pdf-content">
+        <div class="pdf-page">
+            <!-- Nagłówek Dokumentu -->
+            <div class="section-wrapper">
+                <table class="header-table">
+                    <tr>
+                        <td style="width: 25%; vertical-align: middle;" class="header-logo">
+                            <img id="pdf-logo" src="https://placehold.co/200x60/d90000/ffffff?text=LOGO" alt="Logo Firmy" />
+                        </td>
+                        <td style="width: 50%;" class="header-title-container">
+                            <span class="header-title">Wniosek o Umowę Ramową</span>
+                        </td>
+                        <td style="width: 25%;" class="header-date">
+                            <p>Data złożenia: <br><span id="pdf-submission-date"></span></p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- I. Dane wnioskodawcy -->
+            <div class="section-wrapper">
+                <h2 class="section-title">I. Dane wnioskodawcy</h2>
+                <h3 class="subsection-title">1. Dane adresowe</h3>
+                <table class="data-table">
+                    <tr><td class="data-table-label">Pełna nazwa firmy:</td><td class="data-table-value" id="pdf-fullName"></td></tr>
+                    <tr><td class="data-table-label">NIP:</td><td class="data-table-value" id="pdf-nip"></td></tr>
+                    <tr><td class="data-table-label">REGON:</td><td class="data-table-value" id="pdf-regon"></td></tr>
+                    <tr><td class="data-table-label">KRS:</td><td class="data-table-value" id="pdf-krs"></td></tr>
+                    <tr><td class="data-table-label">Adres siedziby:</td><td class="data-table-value" id="pdf-address"></td></tr>
+                    <tr><td class="data-table-label">Adres prowadzenia działalności:</td><td class="data-table-value" id="pdf-business_address"></td></tr>
+                    <tr><td class="data-table-label">Telefon:</td><td class="data-table-value" id="pdf-phone"></td></tr>
+                    <tr><td class="data-table-label">E-mail do wysyłki poręczeń:</td><td class="data-table-value" id="pdf-email"></td></tr>
+                </table>
+
+                <h3 class="subsection-title">2. Reprezentacja firmy</h3>
+                <table class="data-table">
+                     <tr><td class="data-table-label">Imię i nazwisko:</td><td class="data-table-value" id="pdf-rep_name"></td></tr>
+                     <tr><td class="data-table-label">Stanowisko/funkcja:</td><td class="data-table-value" id="pdf-rep_position"></td></tr>
+                     <tr><td class="data-table-label">Telefon:</td><td class="data-table-value" id="pdf-rep_phone"></td></tr>
+                     <tr><td class="data-table-label">Adres e-mail:</td><td class="data-table-value" id="pdf-rep_email"></td></tr>
+                     <tr><td class="data-table-label">Nr dowodu osobistego:</td><td class="data-table-value" id="pdf-rep_id_number"></td></tr>
+                     <tr><td class="data-table-label">PESEL:</td><td class="data-table-value" id="pdf-rep_pesel"></td></tr>
+                     <tr><td class="data-table-label">Adres:</td><td class="data-table-value" id="pdf-rep_address"></td></tr>
+                </table>
+                
+                <h3 class="subsection-title">3. Osoba do kontaktów</h3>
+                <table class="data-table">
+                     <tr><td class="data-table-label">Imię i nazwisko:</td><td class="data-table-value" id="pdf-contact_name"></td></tr>
+                     <tr><td class="data-table-label">Stanowisko/funkcja:</td><td class="data-table-value" id="pdf-contact_position"></td></tr>
+                     <tr><td class="data-table-label">Telefon:</td><td class="data-table-value" id="pdf-contact_phone"></td></tr>
+                     <tr><td class="data-table-label">Adres e-mail:</td><td class="data-table-value" id="pdf-contact_email"></td></tr>
+                </table>
+
+                <h3 class="subsection-title">4. Typ przedsiębiorstwa</h3>
+                <table class="data-table">
+                    <tr><td class="data-table-label">Typ:</td><td class="data-table-value" id="pdf-enterprise_type"></td></tr>
+                </table>
+
+                <h3 class="subsection-title">5. Właściciele / udziałowcy / wspólnicy</h3>
+                <table class="bordered-table" id="pdf-owners-table">
+                    <thead><tr><th>Nazwisko / nazwa</th><th>Udziały (%)</th><th>Udziały (wartość)</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+
+                <h3 class="subsection-title">6. Powiązania kapitałowe</h3>
+                <table class="bordered-table" id="pdf-links-table">
+                    <thead><tr><th>Nazwa firmy</th><th>Udziały (%)</th><th>Udziały (wartość)</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                
+                <h3 class="subsection-title">7. Wnioskowany limit poręczeń</h3>
+                <table class="data-table">
+                    <tr><td class="data-table-label">Wadialny:</td><td class="data-table-value" id="pdf-limit_wadialny"></td></tr>
+                    <tr><td class="data-table-label">Kontraktowy:</td><td class="data-table-value" id="pdf-limit_kontrakt"></td></tr>
+                    <tr><td class="data-table-label" style="font-weight: 700;">Łącznie:</td><td class="data-table-value"><strong id="pdf-limit_lacznie"></strong></td></tr>
+                </table>
+            </div>
+            <div class="footer">
+                Strona 1
+            </div>
+        </div>
+
+        <div class="pdf-page">
+            <!-- II. Informacje ogólne -->
+            <div class="section-wrapper">
+                <h2 class="section-title">II. Informacje ogólne</h2>
+                <h3 class="subsection-title">8. Rodzaj prowadzonej działalności</h3>
+                <table class="bordered-table" id="pdf-pkd-table">
+                    <thead><tr><th>Opis działalności</th><th>Kod PKD</th><th>Udział (%)</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <table class="data-table" style="margin-top: 15px;">
+                    <tr><td class="data-table-label">Data rozpoczęcia działalności:</td><td class="data-table-value" id="pdf-start_date"></td></tr>
+                    <tr><td class="data-table-label">Ilość przetargów (ubiegły rok):</td><td class="data-table-value" id="pdf-tenders_participated"></td></tr>
+                    <tr><td class="data-table-label">Ilość wygranych przetargów (ubiegły rok):</td><td class="data-table-value" id="pdf-tenders_won"></td></tr>
+                    <tr><td class="data-table-label">Planowany przychód (bieżący rok):</td><td class="data-table-value" id="pdf-planned_revenue"></td></tr>
+                </table>
+                
+                <h3 class="subsection-title">Dane finansowe (zatrudnienie, obroty, aktywa)</h3>
+                <table class="bordered-table" id="pdf-financial-years-table">
+                    <thead><tr><th>Okres</th><th>Zatrudnienie (osób)</th><th>Obroty netto (PLN)</th><th>Suma aktywów (PLN)</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                
+                <h3 class="subsection-title">9. Forma opodatkowania</h3>
+                <table class="data-table">
+                    <tr><td class="data-table-label">Forma:</td><td class="data-table-value" id="pdf-tax_form"></td></tr>
+                </table>
+                
+                <h3 class="subsection-title">10. Najważniejsi kontrahenci</h3>
+                <table class="bordered-table" id="pdf-contractors-table">
+                    <thead><tr><th>Nazwa</th><th>Zakres</th><th>Udział w dostawach (%)</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+
+                <h3 class="subsection-title">11. Powiązania organizacyjne właścicieli/zarządu</h3>
+                <table class="bordered-table" id="pdf-org-links-table">
+                    <thead><tr><th>Osoba</th><th>Firma</th><th>Udział (%)</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="footer">
+                Strona 2
+            </div>
+        </div>
+
+        <div class="pdf-page">
+            <!-- III. Sytuacja finansowo-ekonomiczna -->
+            <div class="section-wrapper">
+                <h2 class="section-title">III. Sytuacja finansowo-ekonomiczna</h2>
+                <h3 class="subsection-title">12. Rachunki bankowe</h3>
+                <table class="bordered-table" id="pdf-accounts-table">
+                    <thead><tr><th>Nazwa banku</th><th>Numer rachunku</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+
+                <h3 class="subsection-title">13. Kredyty / pożyczki</h3>
+                <table class="bordered-table" id="pdf-credits-table">
+                    <thead><tr><th>Bank</th><th>Rodzaj</th><th>Kwota do spłaty</th><th>Zabezpieczenie</th><th>Termin</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+
+                <h3 class="subsection-title">14. Umowy leasingowe</h3>
+                <table class="bordered-table" id="pdf-leasing-table">
+                    <thead><tr><th>Leasingodawca</th><th>Rodzaj</th><th>Przedmiot</th><th>Kwota</th><th>Rata</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                
+                <h3 class="subsection-title">15. Posiadane limity i gwarancje</h3>
+                <table class="bordered-table" id="pdf-limits-table">
+                    <thead><tr><th>Gwarant</th><th>Rodzaj</th><th>Zabezpieczenie</th><th>Wysokość</th><th>Wykorzystanie</th><th>Termin</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                
+                <h3 class="subsection-title">16. Udzielone poręczenia / weksle</h3>
+                <table class="bordered-table" id="pdf-sureties-table">
+                    <thead><tr><th>Rodzaj</th><th>Wysokość</th><th>Na rzecz</th><th>Termin</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                
+                <h3 class="subsection-title">17. Otrzymane dotacje (ostatnie 3 lata)</h3>
+                <table class="bordered-table" id="pdf-subsidies-table">
+                    <thead><tr><th>Kwota dotacji</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="footer">
+                Strona 3
+            </div>
+        </div>
+
+        <div class="pdf-page">
+            <!-- IV. Majątek firmy -->
+            <div class="section-wrapper">
+                <h2 class="section-title">IV. Majątek firmy</h2>
+                <h3 class="subsection-title">18. Nieruchomości</h3>
+                <table class="bordered-table" id="pdf-real-estate-table">
+                    <thead><tr><th>Rodzaj/adres</th><th>Nr KW</th><th>Wartość rynkowa</th><th>Obciążenie</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+
+                <h3 class="subsection-title">19. Majątek ruchomy</h3>
+                <table class="bordered-table" id="pdf-movable-assets-table">
+                    <thead><tr><th>Rodzaj</th><th>Wartość rynkowa</th><th>Obciążenie</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+
+                <h3 class="subsection-title">20. Obciążenia majątku</h3>
+                <table class="bordered-table" id="pdf-encumbrance-table">
+                    <thead><tr><th>Na rzecz</th><th>Rodzaj majątku</th><th>Wartość</th><th>Wysokość obciążenia</th><th>Forma</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- V. Struktura należności i zobowiązań -->
+            <div class="section-wrapper">
+                <h2 class="section-title">V. Struktura należności i zobowiązań</h2>
+                <h3 class="subsection-title">21. Należności</h3>
+                <table class="bordered-table" id="pdf-receivables-table">
+                    <thead><tr><th>Okres</th><th>Należności ogółem</th><th>Przeterminowane ogółem</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <h3 class="subsection-title">22. Zobowiązania</h3>
+                <table class="bordered-table" id="pdf-liabilities-table">
+                    <thead><tr><th>Okres</th><th>Zobowiązania ogółem</th><th>Przeterminowane ogółem</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="footer">
+                Strona 4
+            </div>
+        </div>
+        
+        <div class="pdf-page">
+             <!-- VI. Kontrakty -->
+            <div class="section-wrapper">
+                <h2 class="section-title">VI. Kontrakty</h2>
+                <h3 class="subsection-title">23. Największe wykonane kontrakty (3 ostatnie lata)</h3>
+                 <table class="bordered-table" id="pdf-completed-contracts-table">
+                    <thead><tr><th>Przedmiot</th><th>Zleceniodawca</th><th>Wartość</th><th>Termin</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                
+                 <h3 class="subsection-title">24. Kontrakty w trakcie realizacji</h3>
+                 <table class="bordered-table" id="pdf-ongoing-contracts-table">
+                    <thead><tr><th>Zadanie</th><th>Zamawiający</th><th>Wartość</th><th>Pozostało</th><th>Realizacja (%)</th><th>Termin</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            
+            <!-- VII. Ankieta -->
+            <div class="section-wrapper">
+                <h2 class="section-title">VII. Ankieta</h2>
+                <h3 class="subsection-title">Zgłoszone roszczenia z gwarancji</h3>
+                 <table class="bordered-table" id="pdf-claims-table">
+                    <thead><tr><th>Kwota</th><th>Data</th><th>Rodzaj gwarancji</th><th>Przyczyna</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="footer">
+                Strona 5
+            </div>
+        </div>
+
+        <div class="pdf-page">
+            <!-- Oświadczenia -->
+            <div class="section-wrapper">
+                <h2 class="section-title">Część B: Oświadczenia</h2>
+                <div class="statement-box" id="pdf-statements-box">
+                    <!-- Oświadczenia zostaną wstawione tutaj dynamicznie -->
+                </div>
+            </div>
+            <div class="footer">
+                Strona 6
+            </div>
+        </div>
+    </div>
+</body>
+</html>
