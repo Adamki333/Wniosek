@@ -129,7 +129,6 @@
   <div class="form-container">
     <header class="banner">
       <div class="banner-content">
-        <!-- Zastąpiono lokalną ścieżkę placeholderem. Można tu wstawić URL lub Base64 -->
         <img src="https://placehold.co/200x60/ffffff/d90000?text=LOGO" alt="Logo FRiP" class="logo" />
         <h1>Wniosek o zawarcie / zmianę<br />Umowy Ramowej</h1>
       </div>
@@ -173,8 +172,6 @@
             </div>
         </div>
         
-        <!-- ... Reszta formularza (sekcje II, III, IV, etc.) pozostaje bez zmian ... -->
-        <!-- Tutaj wklej pozostałą część swojego formularza od sekcji I.2 do samego końca, aż do </div> przed skryptami -->
         <div class="subsection">
             <h3 class="subsection-header">2. Reprezentacja firmy</h3>
             <div id="reprezentacja-container" class="form-grid">
@@ -670,7 +667,7 @@
     </form>
   </div>
   
-  <!-- Szablony dla dynamicznych sekcji (bez zmian) -->
+  <!-- Szablony dla dynamicznych sekcji -->
   <template id="owner-template"><div class="dynamic-row form-grid"><div class="grid-col-span-2"><label class="form-label">Nazwisko / nazwa</label><input type="text" name="owner_name[]" class="input-field"></div><div><label class="form-label">Udziały / akcje (%)</label><div class="input-with-unit"><input type="number" name="owner_shares_percent[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div><div><label class="form-label">Udziały / akcje (wartość)</label><div class="input-with-unit"><input type="text" name="owner_shares_value[]" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div><button type="button" class="btn-remove">Usuń</button></div></template>
   <template id="link-template"><div class="dynamic-row form-grid"><div class="grid-col-span-2"><label class="form-label">Nazwa firmy</label><input type="text" name="link_name[]" class="input-field"></div><div><label class="form-label">Udziały / akcje (%)</label><div class="input-with-unit"><input type="number" name="link_shares_percent[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div><div><label class="form-label">Udziały / akcje (wartość)</label><div class="input-with-unit"><input type="text" name="link_shares_value[]" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div><button type="button" class="btn-remove">Usuń</button></div></template>
   <template id="pkd-template"><div class="dynamic-row form-grid"><div class="grid-col-span-2"><label class="form-label">Rodzaje działalności</label><input type="text" name="pkd_desc[]" class="input-field"></div><div><label class="form-label">PKD</label><input type="text" name="pkd_code[]" class="input-field"></div><div><label class="form-label">Procentowy udział</label><div class="input-with-unit"><input type="number" name="pkd_percent[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div><button type="button" class="btn-remove">Usuń</button></div></template>
@@ -709,37 +706,37 @@
             copyCheckbox: document.getElementById('copy-from-representative'),
             loader: document.getElementById('loader-overlay'),
 
-            // ... (reszta metod bez zmian: fetchCompanyDataByNIP, fillFormField, setNipStatus, createDynamicRow, etc.)
             async fetchCompanyDataByNIP(nip) {
                 const today = new Date().toISOString().split('T')[0];
+                // Użycie proxy, aby ominąć problemy z CORS
                 const apiUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://wl-api.mf.gov.pl/api/search/nip/${nip}?date=${today}`)}`;
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error(`Błąd serwera: ${response.status}`);
-                const apiData = await response.json();
-                const data = JSON.parse(apiData.contents);
-                if (data.code === 'WL_010') throw new Error('Nie znaleziono firmy o podanym numerze NIP.');
-                const subject = data.result?.subject;
-                if (!subject) throw new Error('Otrzymano nieprawidłową odpowiedź z API.');
-                return {
-                    name: subject.name || '',
-                    regon: subject.regon || '',
-                    krs: subject.krs || '',
-                    residenceAddress: {
-                        street: subject.residenceAddress?.ulica || '',
-                        buildingNumber: subject.residenceAddress?.nrDomu || '',
-                        localNumber: subject.residenceAddress?.nrLokalu || '',
-                        postalCode: subject.residenceAddress?.kodPocztowy || '',
-                        city: subject.residenceAddress?.miejscowosc || ''
-                    },
-                    workingAddress: {
-                        street: subject.workingAddress?.ulica || '',
-                        buildingNumber: subject.workingAddress?.nrDomu || '',
-                        localNumber: subject.workingAddress?.nrLokalu || '',
-                        postalCode: subject.workingAddress?.kodPocztowy || '',
-                        city: subject.workingAddress?.miejscowosc || ''
-                    },
-                };
+                try {
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error(`Błąd serwera proxy: ${response.status}`);
+                    const apiData = await response.json();
+                    const data = JSON.parse(apiData.contents);
+
+                    if (data.code === 'WL_010') throw new Error('Nie znaleziono firmy o podanym numerze NIP.');
+                    const subject = data.result?.subject;
+                    if (!subject) throw new Error('Otrzymano nieprawidłową odpowiedź z API.');
+                    
+                    this.setNipStatus('Dane firmy zostały pobrane.', 'success');
+                    this.fillFormField('fullName', subject.name || '');
+                    this.fillFormField('regon', subject.regon || '');
+                    this.fillFormField('krs', subject.krs || '');
+                    if (subject.residenceAddress) {
+                        this.fillFormField('street', subject.residenceAddress.ulica || '');
+                        this.fillFormField('building_number', subject.residenceAddress.nrDomu || '');
+                        this.fillFormField('local_number', subject.residenceAddress.nrLokalu || '');
+                        this.fillFormField('postal_code', subject.residenceAddress.kodPocztowy || '');
+                        this.fillFormField('city', subject.residenceAddress.miejscowosc || '');
+                    }
+                } catch (error) {
+                    console.error('Błąd podczas pobierania danych NIP:', error);
+                    this.setNipStatus(error.message, 'error');
+                }
             },
+            
             fillFormField(id, value) {
                 const element = document.getElementById(id);
                 if (element && value != null) {
@@ -747,11 +744,13 @@
                     element.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             },
+            
             setNipStatus(message, type = 'info') {
                 if (!this.nipStatus) return;
                 this.nipStatus.textContent = message;
                 this.nipStatus.style.color = type === 'success' ? '#16a34a' : (type === 'error' ? '#ef4444' : '#6b7280');
             },
+
             createDynamicRow(templateId, containerId) {
                 const template = document.getElementById(templateId);
                 const container = document.getElementById(containerId);
@@ -766,31 +765,36 @@
                 });
                 container.appendChild(clone);
             },
+
             updateTotalLimit() {
-                const limitWadialny = parseFloat(document.getElementById('limit_wadialny').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
-                const limitKontrakt = parseFloat(document.getElementById('limit_kontrakt').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+                const limitWadialny = parseFloat(document.getElementById('limit_wadialny').value.replace(/\s/g, '').replace(',', '.')) || 0;
+                const limitKontrakt = parseFloat(document.getElementById('limit_kontrakt').value.replace(/\s/g, '').replace(',', '.')) || 0;
                 const total = limitWadialny + limitKontrakt;
                 document.getElementById('limit_lacznie').value = total > 0 ? total.toLocaleString('pl-PL') : '';
             },
+
             updateOngoingContractsTotal() {
                 let valueTotal = 0;
                 let remainingTotal = 0;
-                document.querySelectorAll('.sum-source-contract-value').forEach(input => { valueTotal += parseFloat(input.value.replace(/[^\d,]/g, '').replace(',', '.')) || 0; });
-                document.querySelectorAll('.sum-source-contract-remaining').forEach(input => { remainingTotal += parseFloat(input.value.replace(/[^\d,]/g, '').replace(',', '.')) || 0; });
+                document.querySelectorAll('.sum-source-contract-value').forEach(input => { valueTotal += parseFloat(input.value.replace(/\s/g, '').replace(',', '.')) || 0; });
+                document.querySelectorAll('.sum-source-contract-remaining').forEach(input => { remainingTotal += parseFloat(input.value.replace(/\s/g, '').replace(',', '.')) || 0; });
                 document.getElementById('ongoing-contracts-value-total').value = valueTotal > 0 ? valueTotal.toLocaleString('pl-PL') : '';
                 document.getElementById('ongoing-contracts-remaining-total').value = remainingTotal > 0 ? remainingTotal.toLocaleString('pl-PL') : '';
             },
+
             isValidNrb(nrb) {
                 nrb = nrb.replace(/\s/g, '');
                 if (nrb.length !== 26 || !/^\d+$/.test(nrb)) return false;
                 const nrbWithPL = nrb.substring(2) + '2521' + nrb.substring(0, 2);
                 try { return BigInt(nrbWithPL) % 97n === 1n; } catch(e) { return false; }
             },
+
             formatInput(input) {
                 const formatType = input.dataset.format;
                 if (!formatType) return;
                 let rawValue = input.value;
-                let formattedValue = '';
+                let formattedValue = rawValue;
+
                 switch(formatType) {
                     case 'currency':
                         rawValue = rawValue.replace(/[^\d]/g, '');
@@ -804,62 +808,78 @@
                         rawValue = rawValue.replace(/[^\d\s]/g, '').replace(/\s/g, '').substring(0, 9);
                         formattedValue = (rawValue.match(/.{1,3}/g) || []).join(' ');
                         break;
-                    case 'nip': case 'regon': case 'krs': formattedValue = input.value.replace(/[^\d]/g, ''); break;
+                    case 'nip': case 'regon': case 'krs': formattedValue = rawValue.replace(/[^\d]/g, ''); break;
                     case 'postal':
-                        rawValue = input.value.replace(/[^\d-]/g, '').substring(0,6);
-                        formattedValue = rawValue.length > 2 && !rawValue.includes('-') ? rawValue.slice(0, 2) + '-' + rawValue.slice(2) : rawValue;
+                        rawValue = rawValue.replace(/[^\d-]/g, '').substring(0,6);
+                        if (rawValue.length > 2 && rawValue.charAt(2) !== '-') {
+                            formattedValue = rawValue.slice(0, 2) + '-' + rawValue.slice(2);
+                        } else {
+                            formattedValue = rawValue;
+                        }
                         break;
-                    case 'id': formattedValue = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0,9); break;
-                    case 'pesel': formattedValue = input.value.replace(/[^\d]/g, '').substring(0,11); break;
+                    case 'id': formattedValue = rawValue.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0,9); break;
+                    case 'pesel': formattedValue = rawValue.replace(/[^\d]/g, '').substring(0,11); break;
                 }
-                 input.value = formattedValue;
+                 if (input.value !== formattedValue) {
+                    input.value = formattedValue;
+                 }
             },
-            initializeInputFormatters() { this.form.querySelectorAll('.input-field[data-format]').forEach(input => input.addEventListener('input', (event) => this.formatInput(event.target))); },
-            initializeRealTimeValidation() { this.form.querySelectorAll('input[required], select[required], textarea[required]').forEach(input => { input.addEventListener('input', (event) => this.validateField(event.target)); input.addEventListener('blur', (event) => this.validateField(event.target)); }); },
+
+            initializeInputFormatters() { 
+                this.form.querySelectorAll('.input-field[data-format]').forEach(input => {
+                    input.addEventListener('input', (event) => this.formatInput(event.target));
+                });
+            },
+
+            initializeRealTimeValidation() { 
+                this.form.querySelectorAll('input[required], select[required], textarea[required]').forEach(input => { 
+                    input.addEventListener('input', (event) => this.validateField(event.target)); 
+                    input.addEventListener('blur', (event) => this.validateField(event.target)); 
+                }); 
+            },
+
             validateField(field) {
                 if (field.closest('.disabled-section')) {
                     field.classList.remove('is-invalid');
                     field.setCustomValidity("");
-                    return;
+                    return true;
                 }
                 let isValid = field.checkValidity();
-                if (field.dataset.validation === 'nrb' && field.value.length > 0) {
+                if (isValid && field.dataset.validation === 'nrb' && field.value.length > 0) {
                    isValid = this.isValidNrb(field.value);
                    field.setCustomValidity(isValid ? "" : "Nieprawidłowy numer rachunku.");
                 }
                 field.classList.toggle('is-invalid', !isValid);
+                return isValid;
             },
+
             validateForm() {
+                let isFormValid = true;
                 let firstInvalid = null;
                 this.form.querySelectorAll('input, select, textarea').forEach(field => {
-                    if (!field.closest('.disabled-section')) {
-                       this.validateField(field);
-                       if (!field.checkValidity() && !firstInvalid) {
+                    if (!this.validateField(field)) {
+                        isFormValid = false;
+                        if (!firstInvalid) {
                            firstInvalid = field;
-                       }
+                        }
                     }
                 });
                 if (firstInvalid) {
                     firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    alert('Proszę poprawić błędy w formularzu (pola zaznaczone na czerwono).');
-                    return false;
+                    firstInvalid.focus();
+                    alert('Proszę wypełnić wszystkie wymagane pola (zaznaczone na czerwono).');
                 }
-                return true;
+                return isFormValid;
             },
 
-            // NOWA LOGIKA GENEROWANIA PDF
             populatePdfTemplate() {
                 const getVal = (id) => document.getElementById(id)?.value || '---';
-                const getSelectedText = (id) => {
-                    const select = document.getElementById(id);
-                    return select ? select.options[select.selectedIndex].text : '---';
-                }
                 const setHtml = (id, value) => {
                     const el = document.getElementById(id);
                     if (el) el.innerHTML = value || '---';
                 };
 
-                // Proste pola tekstowe
+                // Proste pola
                 setHtml('pdf-submission-date', new Date().toLocaleDateString('pl-PL'));
                 setHtml('pdf-fullName', getVal('fullName'));
                 setHtml('pdf-nip', getVal('nip'));
@@ -871,7 +891,7 @@
                 setHtml('pdf-phone', getVal('phone'));
                 setHtml('pdf-email', getVal('email'));
 
-                // Reprezentacja
+                // Reprezentacja i Kontakt
                 setHtml('pdf-rep_name', getVal('rep_name'));
                 setHtml('pdf-rep_position', getVal('rep_position'));
                 setHtml('pdf-rep_phone', getVal('rep_phone'));
@@ -879,8 +899,6 @@
                 setHtml('pdf-rep_id_number', getVal('rep_id_number'));
                 setHtml('pdf-rep_pesel', getVal('rep_pesel'));
                 setHtml('pdf-rep_address', `${getVal('rep_street')} ${getVal('rep_building_number')}${getVal('rep_local_number') ? '/'+getVal('rep_local_number') : ''}, ${getVal('rep_postal_code')} ${getVal('rep_city')}`);
-
-                // Osoba do kontaktu
                 setHtml('pdf-contact_name', getVal('contact_name'));
                 setHtml('pdf-contact_position', getVal('contact_position'));
                 setHtml('pdf-contact_phone', getVal('contact_phone'));
@@ -891,23 +909,24 @@
                 setHtml('pdf-enterprise_type', enterpriseType ? enterpriseType.parentElement.textContent.trim() : '---');
 
                 // Limity
-                setHtml('pdf-limit_wadialny', getVal('limit_wadialny') + ' PLN');
-                setHtml('pdf-limit_kontrakt', getVal('limit_kontrakt') + ' PLN');
-                setHtml('pdf-limit_lacznie', getVal('limit_lacznie') + ' PLN');
+                setHtml('pdf-limit_wadialny', getVal('limit_wadialny') ? getVal('limit_wadialny') + ' PLN' : '---');
+                setHtml('pdf-limit_kontrakt', getVal('limit_kontrakt') ? getVal('limit_kontrakt') + ' PLN' : '---');
+                setHtml('pdf-limit_lacznie', getVal('limit_lacznie') ? getVal('limit_lacznie') + ' PLN' : '---');
 
                 // Informacje ogólne
-                setHtml('pdf-start_date', getVal('start_date'));
+                setHtml('pdf-start_date', getVal('start_date') ? new Date(getVal('start_date')).toLocaleDateString('pl-PL') : '---');
                 setHtml('pdf-tenders_participated', getVal('tenders_participated'));
                 setHtml('pdf-tenders_won', getVal('tenders_won'));
-                setHtml('pdf-planned_revenue', getVal('planned_revenue') + ' PLN');
+                setHtml('pdf-planned_revenue', getVal('planned_revenue') ? getVal('planned_revenue') + ' PLN' : '---');
                 setHtml('pdf-tax_form', getVal('tax_form'));
 
-                // Funkcja pomocnicza do wypełniania tabel dynamicznych
+                // Wypełnianie tabel
                 const populateTable = (containerId, tableBodyId, fields, placeholderText) => {
                     const container = document.getElementById(containerId);
-                    const tableBody = document.getElementById(tableBodyId).querySelector('tbody');
-                    tableBody.innerHTML = ''; // Wyczyść tabelę
-                    if (container.closest('.disabled-section') || container.children.length === 0) {
+                    const tableBody = document.getElementById(tableBodyId)?.querySelector('tbody');
+                    if (!tableBody) return;
+                    tableBody.innerHTML = '';
+                    if (container.closest('.disabled-section') || !container.querySelector('.dynamic-row')) {
                         tableBody.innerHTML = `<tr><td colspan="${fields.length}" class="empty-row-placeholder">${placeholderText}</td></tr>`;
                         return;
                     }
@@ -916,14 +935,13 @@
                         fields.forEach(field => {
                             const input = row.querySelector(`[name^="${field}"]`);
                             const td = document.createElement('td');
-                            td.textContent = (input ? input.value : '---') || '---';
+                            td.textContent = (input ? (input.type === 'date' && input.value ? new Date(input.value).toLocaleDateString('pl-PL') : input.value) : '---') || '---';
                             tr.appendChild(td);
                         });
                         tableBody.appendChild(tr);
                     });
                 };
-                
-                // Wypełnianie tabel dynamicznych
+
                 populateTable('owners-container', 'pdf-owners-table', ['owner_name', 'owner_shares_percent', 'owner_shares_value'], 'Brak właścicieli');
                 populateTable('links-container', 'pdf-links-table', ['link_name', 'link_shares_percent', 'link_shares_value'], 'Brak powiązań kapitałowych');
                 populateTable('pkd-container', 'pdf-pkd-table', ['pkd_desc', 'pkd_code', 'pkd_percent'], 'Brak zdefiniowanej działalności');
@@ -946,15 +964,15 @@
                 const statementsBox = document.getElementById('pdf-statements-box');
                 statementsBox.innerHTML = '';
                 document.querySelectorAll('#statements-section .statement-item').forEach(item => {
-                    const text = item.querySelector('.statement-text').textContent.trim();
+                    const text = item.querySelector('.statement-text').innerHTML;
                     const select = item.querySelector('select');
-                    let value = select ? select.value : '---';
+                    let value = select ? select.options[select.selectedIndex].text : '---';
                     if (item.querySelector('#public_aid_select')?.value === 'TAK') {
                         const amount = item.querySelector('#public-aid-amount-container input').value;
                         value += amount ? ` (łączna wartość: ${amount} PLN)` : '';
                     }
                     const p = document.createElement('p');
-                    p.innerHTML = `<strong>${text}</strong><br>Odpowiedź: <i>${value}</i>`;
+                    p.innerHTML = `${text}<br>Odpowiedź: <i>${value}</i>`;
                     statementsBox.appendChild(p);
                 });
             },
@@ -962,24 +980,30 @@
             async generatePdf() {
                 this.loader.style.display = 'flex';
                 
-                // Wstrzyknięcie szablonu PDF do ukrytego kontenera
-                const pdfTemplateHtml = await fetch('szablon-pdf.html').then(res => res.text());
-                document.getElementById('pdf-render-container').innerHTML = pdfTemplateHtml;
+                try {
+                    // Wstrzyknięcie szablonu PDF do ukrytego kontenera
+                    const pdfTemplateHtml = await fetch('szablon-pdf.html').then(res => {
+                        if (!res.ok) {
+                            throw new Error(`Nie można załadować szablonu PDF (szablon-pdf.html). Upewnij się, że plik istnieje w tym samym folderze. Błąd: ${res.statusText}`);
+                        }
+                        return res.text();
+                    });
+                    document.getElementById('pdf-render-container').innerHTML = pdfTemplateHtml;
 
-                // Wypełnienie szablonu danymi z formularza
-                this.populatePdfTemplate();
+                    // Wypełnienie szablonu danymi z formularza
+                    this.populatePdfTemplate();
 
-                const pdfContent = document.getElementById('pdf-content');
-                const pdfPages = pdfContent.querySelectorAll('.pdf-page');
-                const doc = new jsPDF('p', 'mm', 'a4');
-                
-                for (let i = 0; i < pdfPages.length; i++) {
-                    const page = pdfPages[i];
-                    await html2canvas(page, {
-                        scale: 2, // Lepsza jakość
-                        useCORS: true,
-                        logging: false
-                    }).then(canvas => {
+                    const pdfContent = document.getElementById('pdf-content');
+                    const pdfPages = pdfContent.querySelectorAll('.pdf-page');
+                    const doc = new jsPDF('p', 'mm', 'a4');
+                    
+                    for (let i = 0; i < pdfPages.length; i++) {
+                        const page = pdfPages[i];
+                        const canvas = await html2canvas(page, {
+                            scale: 2, // Lepsza jakość
+                            useCORS: true,
+                            logging: false
+                        });
                         const imgData = canvas.toDataURL('image/png');
                         const imgProps = doc.getImageProperties(imgData);
                         const pdfWidth = doc.internal.pageSize.getWidth();
@@ -989,11 +1013,15 @@
                             doc.addPage();
                         }
                         doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                    });
+                    }
+                    
+                    doc.save('wniosek-umowa-ramowa.pdf');
+                } catch (error) {
+                    console.error("Błąd podczas generowania PDF:", error);
+                    alert("Wystąpił błąd podczas generowania PDF: " + error.message);
+                } finally {
+                    this.loader.style.display = 'none';
                 }
-                
-                doc.save('wniosek-umowa-ramowa.pdf');
-                this.loader.style.display = 'none';
             },
 
             init() {
@@ -1005,19 +1033,65 @@
                 const publicAidSelect = document.getElementById('public_aid_select');
                 if (publicAidSelect) {
                     publicAidSelect.addEventListener('change', (e) => {
-                        document.getElementById('public-aid-amount-container').style.display = e.target.value === 'yes' ? 'flex' : 'none';
+                        document.getElementById('public-aid-amount-container').style.display = e.target.value === 'TAK' ? 'flex' : 'none';
                     });
                 }
                 
-                this.nipInput.addEventListener('blur', async () => { /* ... bez zmian ... */ });
-                this.copyCheckbox.addEventListener('change', (e) => { /* ... bez zmian ... */ });
-                this.form.addEventListener('click', (e) => { /* ... bez zmian ... */ });
-                this.form.querySelectorAll('.brak-checkbox').forEach(checkbox => { /* ... bez zmian ... */ });
+                let nipTimeout;
+                this.nipInput.addEventListener('input', () => {
+                    clearTimeout(nipTimeout);
+                    this.setNipStatus('Wprowadź NIP, aby pobrać dane...', 'info');
+                    nipTimeout = setTimeout(() => {
+                        const nip = this.nipInput.value.replace(/[^\d]/g, '');
+                        if (nip.length === 10) {
+                            this.setNipStatus('Pobieranie danych...', 'info');
+                            this.fetchCompanyDataByNIP(nip);
+                        }
+                    }, 1000);
+                });
+
+                this.copyCheckbox.addEventListener('change', (e) => {
+                    const contactFields = document.getElementById('contact-person-fields');
+                    const repFields = {
+                        name: 'rep_name', position: 'rep_position', phone: 'rep_phone', email: 'rep_email'
+                    };
+                    const contactIds = {
+                        name: 'contact_name', position: 'contact_position', phone: 'contact_phone', email: 'contact_email'
+                    };
+
+                    if (e.target.checked) {
+                        Object.keys(repFields).forEach(key => {
+                            this.fillFormField(contactIds[key], document.getElementById(repFields[key]).value);
+                        });
+                        contactFields.style.display = 'none';
+                    } else {
+                        contactFields.style.display = 'grid';
+                    }
+                });
+
+                this.form.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('btn-add')) {
+                        this.createDynamicRow(e.target.dataset.template, e.target.dataset.container);
+                    }
+                    if (e.target.classList.contains('btn-remove')) {
+                        e.target.closest('.dynamic-row').remove();
+                    }
+                });
+
+                this.form.querySelectorAll('.brak-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => {
+                        const section = document.getElementById(e.target.dataset.controls);
+                        if (section) {
+                            section.classList.toggle('disabled-section', e.target.checked);
+                        }
+                    });
+                });
                 
                 const contractsContainer = document.getElementById('ongoing-contracts-container');
                 if (contractsContainer) {
-                    contractsContainer.addEventListener('input', (e) => { if (e.target.matches('.sum-source-contract-value, .sum-source-contract-remaining')) this.updateOngoingContractsTotal(); });
-                    contractsContainer.addEventListener('click', (e) => { if (e.target.classList.contains('btn-remove')) this.updateOngoingContractsTotal(); });
+                    const updateTotal = () => this.updateOngoingContractsTotal();
+                    contractsContainer.addEventListener('input', (e) => { if (e.target.matches('.sum-source-contract-value, .sum-source-contract-remaining')) updateTotal(); });
+                    contractsContainer.addEventListener('click', (e) => { if (e.target.classList.contains('btn-remove')) setTimeout(updateTotal, 0); });
                 }
                 
                 this.form.querySelectorAll('.limit-sum-source').forEach(input => input.addEventListener('input', () => this.updateTotalLimit()));
@@ -1033,6 +1107,5 @@
         App.init();
     });
   </script>
-  
 </body>
 </html>
