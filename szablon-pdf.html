@@ -32,11 +32,8 @@
             margin: 0 auto;
             background: white;
             box-sizing: border-box;
-            page-break-after: always;
         }
-        .pdf-page:last-child {
-            page-break-after: avoid;
-        }
+        
         table {
             border-collapse: collapse;
             width: 100%;
@@ -45,10 +42,7 @@
             margin: 0;
             padding: 0;
         }
-        .section-wrapper {
-            page-break-inside: avoid;
-            margin-bottom: 20px;
-        }
+        
         .header-table {
             width: 100%;
             margin-bottom: 25px;
@@ -94,9 +88,6 @@
             width: 100%;
             font-size: 0.95rem;
             border-spacing: 0;
-        }
-        .data-table tr {
-            page-break-inside: avoid;
         }
         .data-table td {
             padding: 8px 5px;
@@ -179,6 +170,37 @@
             padding: 20px;
             background-color: var(--background-light);
         }
+
+        /* --- STYLE DO DRUKU I GENEROWANIA PDF --- */
+        @media print {
+            body {
+                background-color: #fff;
+            }
+            .pdf-page {
+                padding: 0;
+                margin: 0;
+                box-shadow: none;
+                border: none;
+            }
+        }
+
+        /* Reguły kontrolujące łamanie stron */
+        .pdf-page {
+            page-break-after: always;
+        }
+        .pdf-page:last-child {
+            page-break-after: avoid;
+        }
+        .section-wrapper, .subsection-title, .data-table, .bordered-table, .statement-box p {
+            page-break-inside: avoid;
+        }
+        h2, h3, h4 {
+            page-break-after: avoid; /* Unikaj łamania strony tuż po nagłówku */
+        }
+        tr {
+            page-break-inside: avoid; /* Unikaj łamania strony wewnątrz wiersza tabeli */
+        }
+
     </style>
 </head>
 <body>
