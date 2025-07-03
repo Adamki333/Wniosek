@@ -1,511 +1,892 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kreator Wniosku o Umowę Ramową</title>
-
-  <!-- Ładowanie czcionki dla strony HTML -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Zewnętrzne biblioteki do generowania PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf-autotable.umd.min.js"></script>
-  
-  <!-- Style CSS dla kreatora -->
-  <style>
-    :root { 
-        --primary: #d90000; 
-        --primary-light: #fef2f2;
-        --secondary: #1f2937;
-        --gray-100: #f3f4f6;
-        --gray-200: #e5e7eb;
-        --gray-500: #6b7280;
-        --gray-700: #374151;
-        --gray-800: #1f2937;
-        --green-500: #22c55e;
-        --red-500: #ef4444;
-    }
-    *, :before, :after { box-sizing: border-box; }
-    body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--gray-100); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 2rem 1rem; }
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wniosek o zawarcie / zmianę Umowy Ramowej - Kreator</title>
     
-    .wizard-container { width: 100%; max-width: 64rem; background-color: #ffffff; border-radius: 1rem; overflow: hidden; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); display: flex; flex-direction: column; max-height: 90vh; }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    .progress-bar { display: flex; padding: 1rem 2rem; border-bottom: 1px solid var(--gray-200); background-color: #fff; flex-shrink: 0; }
-    .progress-step { flex: 1; text-align: center; position: relative; cursor: pointer; }
-    .progress-step .step-circle { width: 2.5rem; height: 2.5rem; border-radius: 50%; background-color: var(--gray-200); color: var(--gray-500); display: flex; align-items: center; justify-content: center; font-weight: 600; margin: 0 auto; transition: all 0.3s ease; border: 2px solid transparent; }
-    .progress-step .step-label { margin-top: 0.5rem; font-size: 0.75rem; font-weight: 500; color: var(--gray-500); transition: all 0.3s ease; }
-    .progress-step:not(:last-child)::after { content: ''; position: absolute; top: 1.25rem; left: 50%; width: 100%; height: 2px; background-color: var(--gray-200); transform: translateY(-50%); z-index: -1; transition: background-color 0.3s ease; }
-    
-    .progress-step.active .step-circle { background-color: var(--primary-light); color: var(--primary); border-color: var(--primary); }
-    .progress-step.active .step-label { color: var(--primary); font-weight: 600; }
-    .progress-step.completed .step-circle { background-color: var(--primary); color: #fff; }
-    .progress-step.completed .step-label { color: var(--gray-800); }
-    .progress-step.completed:not(:last-child)::after { background-color: var(--primary); }
-
-    .form-body { padding: 1.5rem 3rem; overflow-y: auto; flex-grow: 1; }
-    .form-step { display: none; }
-    .form-step.active { display: block; animation: fadeIn 0.5s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    .form-section-header { font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; color: var(--secondary); }
-    .subsection { margin-bottom: 2.5rem; }
-    .subsection-header { font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--gray-200); }
-    
-    .form-grid { display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 1.5rem 2rem; }
-    @media (min-width: 768px) { .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-    .grid-col-span-2 { grid-column: span 2 / span 2; }
-    .form-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem; color: #374151; }
-    .form-label.required:after { content: " *"; color: var(--red-500); }
-    .input-field, select.input-field, textarea.input-field { width: 100%; padding: 0.5rem 1rem; background-color: #f9fafb; border: 1px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; }
-    .input-field:focus, select.input-field:focus, textarea.input-field:focus { outline: 2px solid transparent; outline-offset: 2px; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light); }
-    .input-field.is-invalid { border-color: var(--red-500); background-color: #fee2e2; }
-    .dynamic-row { position: relative; margin-bottom: 0.75rem; padding: 1.25rem; padding-top: 2.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; background-color: #fafafa; }
-    .btn-remove { position: absolute; top: 0.5rem; right: 0.5rem; padding: 0.25rem 1rem; background-color: #dc2626; color: white; font-weight: 600; border-radius: 0.375rem; transition: background-color 0.2s; cursor: pointer; border: none; }
-    .btn-remove:hover { background-color: #b91c1c; }
-    .btn-add { padding: 0.5rem 1rem; background-color: #16a34a; color: white; font-weight: 600; border-radius: 0.375rem; transition: background-color 0.2s; cursor: pointer; border: none; }
-    .btn-add:hover { background-color: #15803d; }
-    
-    .form-footer { padding: 1.5rem 3rem; border-top: 1px solid var(--gray-200); background-color: #fff; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-    .btn { padding: 0.75rem 2rem; font-weight: 600; border-radius: 0.5rem; transition: all 0.2s; cursor: pointer; border: none; }
-    .btn-secondary { background-color: var(--gray-200); color: var(--gray-800); }
-    .btn-secondary:hover { background-color: #d1d5db; }
-    .btn-primary { background-color: var(--primary); color: #ffffff; }
-    .btn-primary:hover { background-color: #b90000; }
-    .btn:disabled { background-color: #d1d5db; cursor: not-allowed; }
-    .btn-generate { background-color: var(--green-500); color: #fff; }
-    .btn-generate:hover { background-color: #16a34a; }
-
-    .final-step-content { text-align: center; padding: 4rem 2rem; }
-    .final-step-content svg { width: 5rem; height: 5rem; color: var(--green-500); margin: 0 auto 1.5rem; }
-    .final-step-content h2 { font-size: 2rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; }
-    .final-step-content p { color: var(--gray-500); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; }
-
-    #loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
-    .loader-spinner { border: 8px solid #f3f3f3; border-top: 8px solid var(--primary); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-  </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div id="loader-overlay"><div class="loader-spinner"></div></div>
+<div id="introModal" class="modal-overlay visible">
+    <div id="introModalContent" class="modal-content">
+        <h3 class="modal-header">Przygotuj się do wypełnienia wniosku</h3>
+        <p class="modal-text" style="text-align: left;">
+            Przed rozpoczęciem upewnij się, że masz pod ręką następujące dokumenty i informacje:
+        </p>
+        <ul class="document-list">
+            <li>Pełne dane firmy (NIP, REGON, KRS)</li>
+            <li>Dane osób reprezentujących firmę (w tym PESEL i nr dowodu)</li>
+            <li>Dokumenty finansowe z ostatnich 3 lat (np. PIT, CIT, sprawozdania F-01)</li>
+            <li>Wykaz posiadanych kredytów, leasingów i innych zobowiązań</li>
+            <li>Szczegóły dotyczące majątku firmy (nieruchomości, pojazdy)</li>
+            <li>Wykaz zrealizowanych i bieżących kontraktów</li>
+        </ul>
+        <button type="button" class="btn-primary" id="startFormBtn">Rozumiem, zaczynam</button>
+    </div>
+</div>
 
-  <div class="wizard-container">
-    <div class="progress-bar" id="progressBar"></div>
+<div id="formWrapper" class="form-container">
+    <header class="banner">
+        <div class="banner-content">
+            <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDU3cHgiIGhlaWdodD0iMTE4cHgiIHZpZXdCb3g9IjAgMCA0NTcgMTE4IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Ikdyb3VwLTIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIuMDAwMDAwLCAyLjAwMDAwMCkiPgogICAgICAgICAgICA8cmVjdCBpZD0iUmVjdGFuZ2xlIiBzdHJva2U9IiNkOTAwMDAiIHN0cm9rZS13aWR0aD0iMyIgeD0iMCIgeT0iMCIgd2lkdGg9IjQ1NCIgaGVpZ2h0PSIxMTQiIHJ4PSI4Ij48L3JlY3Q+CiAgICAgICAgICAgIDx0ZXh0IGlkPSJUV09KRSBMT0dPIiBmb250LWZhbWlseT0iQXJpYWwtQm9sZCwgQXJpYWwiIGZvbnQtc2l6ZT0iNDIiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjZDkwMDAwIj4KICAgICAgICAgICAgICAgIDx0c3BhbiB4PSIxMTMuNjg4IiB5PSI3NiI+VFdPSkUgTE9HTzwvdHNwYW4+CiAgICAgICAgICAgIDwvdGV4dD4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPg==" alt="Logo Firmy" class="logo" />
+            <h1>Wniosek o zawarcie / zmianę<br />Umowy Ramowej</h1>
+        </div>
+    </header>
+
+    <div class="wizard-progress">
+        <ol class="wizard-progress-bar">
+            <div class="wizard-progress-line"></div>
+            <li class="wizard-progress-step"><div class="step-indicator">1</div><span class="step-label">Wnioskodawca</span></li>
+            <li class="wizard-progress-step"><div class="step-indicator">2</div><span class="step-label">Inf. ogólne</span></li>
+            <li class="wizard-progress-step"><div class="step-indicator">3</div><span class="step-label">Finanse</span></li>
+            <li class="wizard-progress-step"><div class="step-indicator">4</div><span class="step-label">Majątek</span></li>
+            <li class="wizard-progress-step"><div class="step-indicator">5</div><span class="step-label">Struktura</span></li>
+            <li class="wizard-progress-step"><div class="step-indicator">6</div><span class="step-label">Kontrakty</span></li>
+            <li class="wizard-progress-step"><div class="step-indicator">7</div><span class="step-label">Ankieta</span></li>
+            <li class="wizard-progress-step"><div class="step-indicator">8</div><span class="step-label">Oświadczenia</span></li>
+            <li class="wizard-progress-step"><div class="step-indicator">9</div><span class="step-label">Wykaz</span></li>
+        </ol>
+    </div>
 
     <form id="applicationForm" class="form-body" novalidate>
-      
-      <!-- Krok 1: Dane Wnioskodawcy -->
-      <div class="form-step active" data-step="1" data-label="Dane Wnioskodawcy">
-        <h2 class="form-section-header">Krok 1: Dane Wnioskodawcy</h2>
-        <div class="subsection">
-          <h3 class="subsection-header">Dane adresowe</h3>
-          <div class="form-grid">
-            <div><label for="nip" class="form-label required">NIP</label><input type="text" id="nip" name="nip" required class="input-field" /><p id="nipStatus" style="font-size: 0.8rem; margin-top: 4px;"></p></div>
-            <div><label for="regon" class="form-label">REGON</label><input type="text" id="regon" name="regon" class="input-field" /></div>
-            <div class="grid-col-span-2"><label for="fullName" class="form-label required">Pełna nazwa firmy</label><input type="text" id="fullName" name="fullName" required class="input-field" /></div>
-            <div class="grid-col-span-2"><p class="form-label required">Adres siedziby</p></div>
-            <div><label for="street" class="form-label required">Ulica</label><input type="text" id="street" name="street" required class="input-field" /></div>
-            <div><label for="building_number" class="form-label required">Numer domu</label><input type="text" id="building_number" name="building_number" required class="input-field" /></div>
-            <div><label for="postal_code" class="form-label required">Kod pocztowy</label><input type="text" id="postal_code" name="postal_code" required class="input-field" /></div>
-            <div><label for="city" class="form-label required">Miejscowość</label><input type="text" id="city" name="city" required class="input-field" /></div>
-            <div><label for="phone" class="form-label required">Telefon</label><input type="tel" id="phone" name="phone" required class="input-field" /></div>
-            <div><label for="email" class="form-label required">E-mail</label><input type="email" id="email" name="email" required class="input-field" /></div>
-          </div>
-        </div>
-        <div class="subsection">
-          <h3 class="subsection-header">Reprezentacja i kontakt</h3>
-           <div class="form-grid">
-              <div class="grid-col-span-2"><label for="rep_name" class="form-label required">Imię i nazwisko osoby reprezentującej</label><input type="text" id="rep_name" required class="input-field"></div>
-              <div><label for="rep_phone" class="form-label required">Telefon</label><input type="tel" id="rep_phone" required class="input-field"></div>
-              <div><label for="rep_email" class="form-label required">Adres e-mail</label><input type="email" id="rep_email" required class="input-field"></div>
-           </div>
-        </div>
-      </div>
+        
+        <section class="wizard-step">
+            <h2 class="form-section-header">I. Dane wnioskodawcy</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-header">1. Dane adresowe</h3>
+                <div class="form-grid">
+                    <div><label for="nip" class="form-label required">NIP</label><input type="text" id="nip" name="nip" required data-format="nip" class="input-field" /><p id="nipStatus" class="field-status"></p></div>
+                    <div><label for="regon" class="form-label">REGON</label><input type="text" id="regon" name="regon" data-format="regon" class="input-field" /></div>
+                    <div class="grid-col-span-2"><label for="fullName" class="form-label required">Pełna nazwa firmy</label><input type="text" id="fullName" name="fullName" required class="input-field" /></div>
+                    
+                    <div class="grid-col-span-2"><p class="form-label required">Adres siedziby</p></div>
+                    <div class="grid-col-span-2"><label for="street" class="form-label">Ulica</label><input type="text" id="street" name="street" required class="input-field" /></div>
+                    <div><label for="building_number" class="form-label required">Numer domu</label><input type="text" id="building_number" name="building_number" required class="input-field" /></div>
+                    <div><label for="local_number" class="form-label">Numer lokalu</label><input type="text" id="local_number" name="local_number" class="input-field" /></div>
+                    <div><label for="postal_code" class="form-label required">Kod pocztowy</label><input type="text" id="postal_code" name="postal_code" required data-format="postal" title="Podaj kod w formacie XX-XXX" class="input-field" /></div>
+                    <div><label for="city" class="form-label required">Miejscowość</label><input type="text" id="city" name="city" required class="input-field" /></div>
 
-      <!-- Krok 2: Informacje o Firmie -->
-      <div class="form-step" data-step="2" data-label="O Firmie">
-        <h2 class="form-section-header">Krok 2: Informacje o Firmie</h2>
-        <div class="subsection">
-            <h3 class="subsection-header">Właściciele / udziałowcy</h3>
-            <div id="owners-container"></div>
-            <button type="button" class="btn-add" data-template="owner-template" data-container="owners-container">+ Dodaj właściciela</button>
-        </div>
-         <div class="subsection">
-            <h3 class="subsection-header">Wnioskowany limit poręczeń</h3>
-            <div class="form-grid">
-                <div><label for="limit_wadialny" class="form-label">Wadialny</label><input type="text" id="limit_wadialny" class="input-field"></div>
-                <div><label for="limit_kontrakt" class="form-label">Kontraktowy</label><input type="text" id="limit_kontrakt" class="input-field"></div>
+                    <div>
+                        <label for="province" class="form-label">Województwo</label>
+                        <select id="province" name="province" class="input-field">
+                            <option value="">-- wybierz --</option>
+                            <option>dolnośląskie</option><option>kujawsko-pomorskie</option><option>lubelskie</option><option>lubuskie</option><option>łódzkie</option><option>małopolskie</option><option>mazowieckie</option><option>opolskie</option><option>podkarpackie</option><option>podlaskie</option><option>pomorskie</option><option>śląskie</option><option>świętokrzyskie</option><option>warmińsko-mazurskie</option><option>wielkopolskie</option><option>zachodniopomorskie</option>
+                        </select>
+                    </div>
+                    <div><label for="krs" class="form-label">KRS</label><input type="text" id="krs" name="krs" data-format="krs" class="input-field" /></div>
+
+                    <div class="grid-col-span-2"><p class="form-label">Adres prowadzenia działalności <span class="label-note">(jeśli inny)</span></p></div>
+                    <div class="grid-col-span-2"><label for="business_street" class="form-label">Ulica</label><input type="text" id="business_street" name="business_street" class="input-field" /></div>
+                    <div><label for="business_building_number" class="form-label">Numer domu</label><input type="text" id="business_building_number" name="business_building_number" class="input-field" /></div>
+                    <div><label for="business_local_number" class="form-label">Numer lokalu</label><input type="text" id="business_local_number" name="business_local_number" class="input-field" /></div>
+                    <div><label for="business_postal_code" class="form-label">Kod pocztowy</label><input type="text" id="business_postal_code" name="business_postal_code" data-format="postal" title="Podaj kod w formacie XX-XXX" class="input-field" /></div>
+                    <div><label for="business_city" class="form-label">Miejscowość</label><input type="text" id="business_city" name="business_city" class="input-field" /></div>
+
+                    <div><label for="phone" class="form-label required">Telefon</label><input type="tel" id="phone" name="phone" required data-format="phone" title="Podaj prawidłowy numer telefonu (min. 9 cyfr)." class="input-field" /></div>
+                    <div><label for="email" class="form-label required">Adres e-mail do wysyłki poręczeń</label><input type="email" id="email" name="email" required title="Podaj prawidłowy adres e-mail." class="input-field" /></div>
+                </div>
             </div>
-        </div>
-      </div>
 
-      <!-- Krok 3: Finanse -->
-      <div class="form-step" data-step="3" data-label="Finanse">
-        <h2 class="form-section-header">Krok 3: Sytuacja Finansowa</h2>
-        <div class="subsection">
-            <h3 class="subsection-header">Posiadane rachunki bankowe</h3>
-            <div id="accounts-container"></div>
-            <button type="button" class="btn-add" data-template="account-template" data-container="accounts-container">+ Dodaj rachunek</button>
-        </div>
-        <div class="subsection">
-            <h3 class="subsection-header">Posiadane kredyty / pożyczki</h3>
-             <div id="credits-container"></div>
-             <button type="button" class="btn-add" data-template="credit-template" data-container="credits-container">+ Dodaj zobowiązanie</button>
-        </div>
-      </div>
+            <div class="subsection">
+                <h3 class="subsection-header">2. Reprezentacja firmy</h3>
+                <div id="reprezentacja-container" class="form-grid">
+                    <div class="grid-col-span-2"><label for="rep_name" class="form-label required">Imię i nazwisko</label><input type="text" id="rep_name" required class="input-field"></div>
+                    <div><label for="rep_position" class="form-label required">Stanowisko/funkcja</label><input type="text" id="rep_position" required class="input-field"></div>
+                    <div><label for="rep_phone" class="form-label required">Telefon</label><input type="tel" id="rep_phone" required data-format="phone" title="Podaj prawidłowy numer telefonu (min. 9 cyfr)." class="input-field"></div>
+                    <div class="grid-col-span-2"><label for="rep_email" class="form-label required">Adres e-mail</label><input type="email" id="rep_email" required title="Podaj prawidłowy adres e-mail." class="input-field"></div>
+                    <div><label for="rep_id_number" class="form-label required">Numer dowodu osobistego</label><input type="text" id="rep_id_number" required data-format="id" title="Podaj numer dowodu w formacie AAA123456." class="input-field"></div>
+                    <div><label for="rep_pesel" class="form-label required">PESEL</label><input type="text" id="rep_pesel" required data-format="pesel" title="Podaj 11 cyfr numeru PESEL." class="input-field"></div>
+                    
+                    <div class="grid-col-span-2"><p class="form-label required">Adres</p></div>
+                    <div class="grid-col-span-2"><label for="rep_street" class="form-label">Ulica</label><input type="text" id="rep_street" name="rep_street" required class="input-field" /></div>
+                    <div><label for="rep_building_number" class="form-label required">Numer domu</label><input type="text" id="rep_building_number" name="rep_building_number" required class="input-field" /></div>
+                    <div><label for="rep_local_number" class="form-label">Numer lokalu</label><input type="text" id="rep_local_number" name="rep_local_number" class="input-field" /></div>
+                    <div><label for="rep_postal_code" class="form-label required">Kod pocztowy</label><input type="text" id="rep_postal_code" name="rep_postal_code" required data-format="postal" title="Podaj kod w formacie XX-XXX" class="input-field" /></div>
+                    <div><label for="rep_city" class="form-label required">Miejscowość</label><input type="text" id="rep_city" name="rep_city" required class="input-field" /></div>
+                </div>
+            </div>
 
-      <!-- Krok 4: Oświadczenia -->
-      <div class="form-step" data-step="4" data-label="Oświadczenia">
-        <h2 class="form-section-header">Krok 4: Oświadczenia</h2>
-        <p>Proszę potwierdzić poniższe oświadczenie, aby kontynuować.</p>
-        <div style="margin-top: 2rem; padding: 1rem; background-color: var(--primary-light); border-radius: 0.5rem;">
-             <label style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                <input type="checkbox" name="master_consent" required style="margin-top: 5px; flex-shrink: 0;">
-                <span style="font-size: 0.9rem;">
-                    <strong>Oświadczam, że zapoznałem/am się z regulaminem i akceptuję jego treść, a wszystkie podane dane są zgodne z prawdą.</strong>
-                </span>
-            </label>
-        </div>
-      </div>
-      
-      <!-- Krok 5: Podsumowanie -->
-      <div class="form-step" data-step="5" data-label="Podsumowanie">
-        <div class="final-step-content">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h2>Wniosek gotowy!</h2>
-            <p>Wszystkie dane zostały wprowadzone. Kliknij poniższy przycisk, aby wygenerować i pobrać wniosek w formacie PDF.</p>
-        </div>
-      </div>
-
-    </form>
-
-    <div class="form-footer" id="navigation">
-      <button type="button" class="btn btn-secondary" id="prevBtn">Wstecz</button>
-      <button type="button" class="btn btn-primary" id="nextBtn">Dalej</button>
-      <button type="button" id="generatePdf" class="btn btn-generate" style="display: none;">Generuj PDF</button>
-    </div>
-  </div>
-  
-  <!-- Szablony dla dynamicznych sekcji -->
-  <template id="owner-template"><div class="dynamic-row form-grid"><div class="grid-col-span-2"><label class="form-label">Nazwisko / nazwa</label><input type="text" name="owner_name[]" class="input-field"></div><div><label class="form-label">Udziały (%)</label><input type="number" name="owner_shares_percent[]" class="input-field" min="0" max="100"></div><button type="button" class="btn-remove">Usuń</button></div></template>
-  <template id="account-template"><div class="dynamic-row form-grid"><div><label class="form-label">Nazwa banku</label><input type="text" name="bank_name[]" required class="input-field"></div><div><label class="form-label">Numer rachunku</label><input type="text" name="account_number[]" required class="input-field"></div><button type="button" class="btn-remove">Usuń</button></div></template>
-  <template id="credit-template"><div class="dynamic-row form-grid"><div class="grid-col-span-2"><label class="form-label">Nazwa banku</label><input type="text" name="credit_bank[]" class="input-field"></div><div><label class="form-label">Kwota do spłaty</label><input type="text" name="credit_amount[]" class="input-field"></div><button type="button" class="btn-remove">Usuń</button></div></template>
-
-  <!-- Skrypt JavaScript -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const App = {
-            currentStep: 1,
-            totalSteps: 0,
+            <div class="subsection">
+                <h3 class="subsection-header">3. Osoba do kontaktów w sprawie gwarancji / poręczeń</h3>
+                <div class="checkbox-container">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="copy-from-representative" class="form-checkbox">
+                        Osoba do reprezentacji firmy jest również osobą do kontaktu
+                    </label>
+                </div>
+                <div id="contact-person-fields" class="form-grid">
+                    <div class="grid-col-span-2"><label for="contact_name" class="form-label">Imię i nazwisko</label><input type="text" id="contact_name" class="input-field"></div>
+                    <div><label for="contact_position" class="form-label">Stanowisko/funkcja</label><input type="text" id="contact_position" class="input-field"></div>
+                    <div><label for="contact_phone" class="form-label">Telefon</label><input type="tel" id="contact_phone" data-format="phone" class="input-field"></div>
+                    <div class="grid-col-span-2"><label for="contact_email" class="form-label">Adres e-mail</label><input type="email" id="contact_email" class="input-field"></div>
+                </div>
+            </div>
             
-            init() {
-                this.form = document.getElementById('applicationForm');
-                this.loader = document.getElementById('loader-overlay');
-                this.nipInput = document.getElementById('nip');
-                this.nipStatus = document.getElementById('nipStatus');
+            <div class="subsection">
+                <h3 class="subsection-header">4. Typ przedsiębiorstwa</h3>
+                <div class="grid-col-span-2">
+                    <p class="form-label">Przedsiębiorstwo</p>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                         <label class="checkbox-label"><input type="radio" name="enterprise_type" value="samodzielne" class="form-radio"> Przedsiębiorstwo samodzielne</label>
+                         <label class="checkbox-label"><input type="radio" name="enterprise_type" value="partnerskie" class="form-radio"> Przedsiębiorstwo partnerskie</label>
+                         <label class="checkbox-label"><input type="radio" name="enterprise_type" value="powiazane" class="form-radio"> Przedsiębiorstwo powiązane</label>
+                    </div>
+                    <div class="info-text">
+                        <p>Przedsiębiorstwo samodzielne, partnerskie albo powiązane w rozumieniu art. 3 Załącznika I do Rozporządzenia Komisji (UE) nr 651/2014 z dnia 17 czerwca 2014 r.</p>
+                        <p style="margin-top: 0.5rem;">W przypadku zaznaczenia pola "przedsiębiorstwo partnerskie" albo "przedsiębiorstwo powiązane" Poręczyciel może wezwać Wnioskodawcę do przedłożenia dodatkowych dokumentów lub informacji.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">5. Właściciele / udziałowcy / wspólnicy</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" data-controls="owners-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                <div id="owners-section">
+                    <div id="owners-container"></div>
+                    <button type="button" class="btn-add" data-template="owner-template" data-container="owners-container">Dodaj właściciela</button>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">6. Powiązania kapitałowe z innymi podmiotami</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" data-controls="links-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                <div id="links-section">
+                    <div id="links-container"></div>
+                    <button type="button" class="btn-add" data-template="link-template" data-container="links-container">Dodaj powiązanie</button>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-header">7. Wnioskowany limit poręczeń</h3>
+                <p class="label-note" style="margin-top: -0.5rem; margin-bottom: 1rem;">(limit do wykorzystania na pojedyncze poręczenia w ciągu 12 miesięcy)</p>
+                <div class="form-grid">
+                    <label for="limit_wadialny" class="form-label">Wadialny</label>
+                    <div class="input-with-unit"><input type="text" id="limit_wadialny" data-format="currency" placeholder="Wnioskowana kwota" class="input-field limit-sum-source"><span class="unit">PLN</span></div>
+                    
+                    <label for="limit_kontrakt" class="form-label">Należytego wykonania kontraktu, usunięcia wad i usterek oraz zwrotu zaliczki</label>
+                    <div class="input-with-unit"><input type="text" id="limit_kontrakt" data-format="currency" placeholder="Wnioskowana kwota" class="input-field limit-sum-source"><span class="unit">PLN</span></div>
+                    
+                    <hr class="grid-col-span-2">
+                    
+                    <label for="limit_lacznie" class="form-label" style="font-weight: 700;">Łącznie (wyżej wymienione)</label>
+                    <input type="text" id="limit_lacznie" class="input-field" style="font-weight: 700; background-color: #e5e7eb;" readonly>
+                </div>
+            </div>
+        </section>
+
+        <section class="wizard-step">
+            <h2 class="form-section-header">II. Informacje ogólne</h2>
+
+            <div class="subsection">
+                <h3 class="subsection-header">8. Rodzaj prowadzonej działalności</h3>
+                <div id="pkd-section" style="margin-bottom: 2.5rem;">
+                    <div id="pkd-container"></div>
+                    <button type="button" class="btn-add" data-template="pkd-template" data-container="pkd-container">Dodaj działalność</button>
+                </div>
                 
-                this.initWizard();
-                this.initEventListeners();
-                this.loadProgress();
-            },
+                <div class="form-grid">
+                    <div><label for="start_date" class="form-label">Data rozpoczęcia działalności</label><input type="date" id="start_date" class="input-field"></div>
+                    <div><label for="tenders_participated" class="form-label">Ilość przetargów w których firma brała udział w ubiegłym roku</label><input type="number" id="tenders_participated" class="input-field" min="0"></div>
+                    <div><label for="tenders_won" class="form-label">Ilość wygranych przetargów w ubiegłym roku</label><input type="number" id="tenders_won" class="input-field" min="0"></div>
+                    <div>
+                        <label for="planned_revenue" class="form-label">Planowany przychód na koniec bieżącego roku</label>
+                        <div class="input-with-unit"><input type="text" id="planned_revenue" data-format="currency" class="input-field" placeholder="Kwota"><span class="unit">PLN</span></div>
+                    </div>
+                </div>
 
-            initWizard() {
-                this.steps = document.querySelectorAll('.form-step');
-                this.totalSteps = this.steps.length;
-                this.progressBar = document.getElementById('progressBar');
-                this.nextBtn = document.getElementById('nextBtn');
-                this.prevBtn = document.getElementById('prevBtn');
-                this.generatePdfBtn = document.getElementById('generatePdf');
-                
-                this.renderProgressBar();
-                this.updateWizardState();
-            },
-
-            initEventListeners() {
-                this.nextBtn.addEventListener('click', () => this.changeStep(1));
-                this.prevBtn.addEventListener('click', () => this.changeStep(-1));
-                this.generatePdfBtn.addEventListener('click', () => this.generatePdf());
-
-                this.form.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('btn-add')) {
-                        const template = document.getElementById(e.target.dataset.template);
-                        const container = document.getElementById(e.target.dataset.container);
-                        if (template && container) {
-                            container.appendChild(template.content.cloneNode(true));
-                        }
-                    }
-                    if (e.target.classList.contains('btn-remove')) {
-                        e.target.closest('.dynamic-row').remove();
-                        this.saveProgress();
-                    }
-                });
-                
-                // Zapisywanie postępu przy zmianie danych
-                this.form.addEventListener('input', () => this.saveProgress());
-
-                // Pobieranie danych po NIP
-                let nipTimeout;
-                this.nipInput.addEventListener('input', () => {
-                    clearTimeout(nipTimeout);
-                    nipTimeout = setTimeout(() => {
-                        const nip = this.nipInput.value.replace(/[^\d]/g, '');
-                        if (nip.length === 10) {
-                            this.fetchCompanyDataByNIP(nip);
-                        }
-                    }, 1000);
-                });
-            },
-
-            renderProgressBar() {
-                let stepsHtml = '';
-                this.steps.forEach((step, index) => {
-                    const i = index + 1;
-                    const stepLabel = step.dataset.label || `Krok ${i}`;
-                    stepsHtml += `
-                        <div class="progress-step" data-step="${i}">
-                            <div class="step-circle">${i}</div>
-                            <div class="step-label">${stepLabel}</div>
+                <div class="financial-grid" style="margin-top: 2.5rem;">
+                    <div class="financial-year-card">
+                        <h4>Bieżący rok (n)</h4>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field"><span class="unit">osób</span></div></div>
+                            <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
                         </div>
-                    `;
-                });
-                this.progressBar.innerHTML = stepsHtml;
-            },
-
-            updateWizardState() {
-                this.steps.forEach(step => {
-                    step.classList.toggle('active', parseInt(step.dataset.step) === this.currentStep);
-                });
-
-                const progressSteps = this.progressBar.querySelectorAll('.progress-step');
-                progressSteps.forEach(step => {
-                    const stepNum = parseInt(step.dataset.step);
-                    step.classList.toggle('active', stepNum === this.currentStep);
-                    step.classList.toggle('completed', stepNum < this.currentStep);
-                });
-
-                this.prevBtn.style.display = this.currentStep === 1 ? 'none' : 'inline-block';
-                this.nextBtn.style.display = this.currentStep === this.totalSteps ? 'none' : 'inline-block';
-                this.generatePdfBtn.style.display = this.currentStep === this.totalSteps ? 'inline-block' : 'none';
-            },
-
-            changeStep(direction) {
-                if (direction > 0) {
-                    const currentStepElement = document.querySelector(`.form-step[data-step="${this.currentStep}"]`);
-                    let isStepValid = true;
-                    currentStepElement.querySelectorAll('input[required], select[required]').forEach(field => {
-                        if (!this.validateField(field)) isStepValid = false;
-                    });
-                    if (!isStepValid) {
-                        alert('Proszę wypełnić wszystkie wymagane pola w tym kroku.');
-                        return;
-                    }
-                }
-                const newStep = this.currentStep + direction;
-                if (newStep > 0 && newStep <= this.totalSteps) {
-                    this.currentStep = newStep;
-                    this.updateWizardState();
-                }
-            },
+                    </div>
+                     <div class="financial-year-card">
+                        <h4>Ubiegły rok (n-1)</h4>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field"><span class="unit">osób</span></div></div>
+                            <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                        </div>
+                    </div>
+                     <div class="financial-year-card">
+                        <h4>Dwa lata wstecz (n-2)</h4>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field"><span class="unit">osób</span></div></div>
+                            <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                        </div>
+                    </div>
+                     <div class="financial-year-card">
+                        <h4>Trzy lata wstecz (n-3)</h4>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div><label class="form-label">Wielkość zatrudnienia</label><div class="input-with-unit"><input type="number" min="0" class="input-field"><span class="unit">osób</span></div></div>
+                            <div><label class="form-label">Obroty ze sprzedaży netto</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Suma aktywów bilansu</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="info-text">
+                    <p>W przypadku Przedsiębiorstwa partnerskiego albo Przedsiębiorstwa powiązanego, o których mowa w pkt. I.4 należy podać skumulowane dane dotyczące wszystkich podmiotów.</p>
+                </div>
+            </div>
             
-            async generatePdf() {
-                this.loader.style.display = 'flex';
-                try {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF('p', 'mm', 'a4');
-                    doc.setFont('Helvetica', 'normal');
+            <div class="subsection">
+                <h3 class="subsection-header">9. Forma opodatkowania</h3>
+                <div>
+                    <label for="tax_form" class="form-label">Wybierz formę opodatkowania</label>
+                    <select id="tax_form" name="tax_form" class="input-field">
+                        <option value="">-- wybierz --</option>
+                        <option value="ryczalt">Ryczałt</option>
+                        <option value="karta">Karta podatkowa</option>
+                        <option value="kpir">Książka przychodów i rozchodów</option>
+                        <option value="pelna_ksiegowosc">Pełna księgowość</option>
+                    </select>
+                </div>
+            </div>
 
-                    const MARGIN = 15, PAGE_WIDTH = doc.internal.pageSize.getWidth(), PAGE_HEIGHT = doc.internal.pageSize.getHeight();
-                    let yPos = MARGIN, pageNum = 1;
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">10. Najważniejsi zamawiający / dostawcy / podwykonawcy</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" data-controls="contractors-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                <div id="contractors-section">
+                    <div id="contractors-container"></div>
+                    <button type="button" class="btn-add" data-template="contractor-template" data-container="contractors-container">Dodaj kontrahenta</button>
+                </div>
+            </div>
 
-                    const checkPageBreak = (heightNeeded) => {
-                        if (yPos + heightNeeded > PAGE_HEIGHT - MARGIN) {
-                            doc.text(`Strona ${pageNum}`, PAGE_WIDTH - MARGIN, PAGE_HEIGHT - 10, { align: 'right' });
-                            doc.addPage();
-                            yPos = MARGIN;
-                            pageNum++;
-                        }
-                    };
-                    const drawSectionTitle = (title) => {
-                        checkPageBreak(20); yPos += 10;
-                        doc.setFontSize(14); doc.setFont('Helvetica', 'bold'); doc.setTextColor('#1f2937');
-                        doc.text(title, MARGIN, yPos); yPos += 8;
-                    };
-                    const drawSubSectionTitle = (title) => {
-                        checkPageBreak(15); yPos += 8;
-                        doc.setFontSize(12); doc.setFont('Helvetica', 'bold'); doc.setTextColor('#374151');
-                        doc.text(title, MARGIN, yPos); yPos += 6;
-                    };
-                    const drawKeyValue = (label, value) => {
-                        checkPageBreak(10);
-                        doc.setFontSize(10); doc.setFont('Helvetica', 'normal'); doc.setTextColor('#6b7280');
-                        doc.text(label, MARGIN, yPos);
-                        doc.setTextColor('#1f2937');
-                        doc.text(value || '---', MARGIN + 60, yPos);
-                        yPos += 7;
-                    };
-                    const drawTable = (headers, data, emptyText) => {
-                        if (!data || data.length === 0) {
-                            checkPageBreak(15); doc.setFontSize(10); doc.setTextColor('#6b7280');
-                            doc.text(emptyText, MARGIN, yPos); yPos += 10; return;
-                        }
-                        // Poprawiona obsługa błędu - użycie globalnego obiektu jspdf
-                        window.jspdf.jsPDF.autoTable.previous = false;
-                        doc.autoTable({
-                            head: [headers], body: data, startY: yPos, theme: 'grid',
-                            headStyles: { fillColor: [243, 244, 246], textColor: [29, 41, 51], font: 'Helvetica', fontStyle: 'bold' },
-                            styles: { font: 'Helvetica', fontStyle: 'normal', cellPadding: 2, fontSize: 9 },
-                            didDrawPage: (data) => {
-                                pageNum = doc.internal.getNumberOfPages();
-                                doc.setFontSize(9); doc.setTextColor('#6b7280');
-                                doc.text(`Strona ${pageNum}`, PAGE_WIDTH - MARGIN, PAGE_HEIGHT - 10, { align: 'right' });
-                            }
-                        });
-                        yPos = doc.autoTable.previous.finalY + 10;
-                    };
-                    
-                    doc.setFontSize(18); doc.setFont('Helvetica', 'bold'); doc.setTextColor('#d90000');
-                    doc.text('Wniosek o Umowę Ramową', PAGE_WIDTH / 2, yPos, { align: 'center' });
-                    yPos += 15;
-                    
-                    const getVal = (id) => document.getElementById(id)?.value || '';
-                    const getTableData = (containerId, fields) => {
-                        const container = document.getElementById(containerId);
-                        if (!container) return [];
-                        return Array.from(container.querySelectorAll('.dynamic-row')).map(row => 
-                            fields.map(field => row.querySelector(`[name^="${field}"]`)?.value || '---')
-                        );
-                    };
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">11. Czy właściciele i/lub członkowie zarządu mają powiązania organizacyjne z innymi firmami?</h3>
+                     <label class="checkbox-label">
+                        <input type="checkbox" data-controls="org-links-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                 <div id="org-links-section">
+                    <div id="org-links-container"></div>
+                    <button type="button" class="btn-add" data-template="org-link-template" data-container="org-links-container">Dodaj powiązanie</button>
+                </div>
+            </div>
+        </section>
 
-                    drawSectionTitle('I. Dane wnioskodawcy');
-                    drawSubSectionTitle('Dane adresowe');
-                    drawKeyValue('Pełna nazwa firmy:', getVal('fullName'));
-                    drawKeyValue('NIP:', getVal('nip'));
-                    drawKeyValue('REGON:', getVal('regon'));
-                    drawKeyValue('Telefon:', getVal('phone'));
-                    drawKeyValue('E-mail:', getVal('email'));
-                    
-                    drawSubSectionTitle('Reprezentacja i kontakt');
-                    drawKeyValue('Osoba reprezentująca:', getVal('rep_name'));
-                    drawKeyValue('Telefon (reprezentant):', getVal('rep_phone'));
-                    drawKeyValue('E-mail (reprezentant):', getVal('rep_email'));
+        <section class="wizard-step">
+            <h2 class="form-section-header">III. Sytuacja finansowo-ekonomiczna</h2>
 
-                    drawSectionTitle('II. Informacje o Firmie');
-                    drawSubSectionTitle('Właściciele');
-                    drawTable(['Nazwisko / nazwa', 'Udziały (%)'], getTableData('owners-container', ['owner_name', 'owner_shares_percent']), 'Brak właścicieli.');
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">12. Posiadane rachunki bankowe</h3>
+                </div>
+                <div id="accounts-section">
+                    <div id="accounts-container"></div>
+                    <button type="button" class="btn-add" data-template="account-template" data-container="accounts-container">Dodaj rachunek</button>
+                </div>
+            </div>
 
-                    drawSubSectionTitle('Wnioskowany limit');
-                    drawKeyValue('Limit wadialny:', getVal('limit_wadialny') + ' PLN');
-                    drawKeyValue('Limit kontraktowy:', getVal('limit_kontrakt') + ' PLN');
-
-                    drawSectionTitle('III. Sytuacja Finansowa');
-                    drawSubSectionTitle('Rachunki bankowe');
-                    drawTable(['Nazwa banku', 'Numer rachunku'], getTableData('accounts-container', ['bank_name', 'account_number']), 'Brak rachunków.');
-                    
-                    drawSubSectionTitle('Kredyty');
-                    drawTable(['Bank', 'Kwota do spłaty'], getTableData('credits-container', ['credit_bank', 'credit_amount']), 'Brak kredytów.');
-
-                    doc.text(`Strona ${pageNum}`, PAGE_WIDTH - MARGIN, PAGE_HEIGHT - 10, { align: 'right' });
-                    doc.save('wniosek-kreator.pdf');
-
-                } catch (error) {
-                    console.error("Błąd podczas generowania PDF:", error);
-                    alert("Wystąpił błąd: " + error.message);
-                } finally {
-                    this.loader.style.display = 'none';
-                }
-            },
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">13. Posiadane kredyty / pożyczki / linie kredytowe</h3>
+                     <label class="checkbox-label">
+                        <input type="checkbox" data-controls="credits-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                 <div id="credits-section">
+                    <div id="credits-container"></div>
+                    <button type="button" class="btn-add" data-template="credit-template" data-container="credits-container">Dodaj zobowiązanie</button>
+                </div>
+            </div>
             
-            validateField(field) {
-                let isValid = field.checkValidity();
-                field.classList.toggle('is-invalid', !isValid);
-                return isValid;
-            },
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">14. Zawarte umowy leasingowe</h3>
+                     <label class="checkbox-label">
+                        <input type="checkbox" data-controls="leasing-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                 <div id="leasing-section">
+                    <div id="leasing-container"></div>
+                    <button type="button" class="btn-add" data-template="leasing-template" data-container="leasing-container">Dodaj umowę</button>
+                </div>
+            </div>
 
-            async fetchCompanyDataByNIP(nip) {
-                this.setNipStatus('Pobieranie danych...', 'info');
-                const today = new Date().toISOString().split('T')[0];
-                const apiUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://wl-api.mf.gov.pl/api/search/nip/${nip}?date=${today}`)}`;
-                try {
-                    const response = await fetch(apiUrl);
-                    if (!response.ok) throw new Error(`Błąd serwera proxy`);
-                    const apiData = await response.json();
-                    const data = JSON.parse(apiData.contents);
-                    if (data.result?.subject) {
-                        const subject = data.result.subject;
-                        this.fillFormField('fullName', subject.name || '');
-                        this.fillFormField('regon', subject.regon || '');
-                        if(subject.residenceAddress) {
-                            this.fillFormField('street', subject.residenceAddress.ulica || '');
-                            this.fillFormField('building_number', subject.residenceAddress.nrDomu || '');
-                            this.fillFormField('postal_code', subject.residenceAddress.kodPocztowy || '');
-                            this.fillFormField('city', subject.residenceAddress.miejscowosc || '');
-                        }
-                        this.setNipStatus('Dane firmy zostały pobrane.', 'success');
-                    } else {
-                        throw new Error('Nie znaleziono firmy.');
-                    }
-                } catch (error) {
-                    this.setNipStatus(error.message, 'error');
-                }
-            },
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">15. Posiadane limity i gwarancje</h3>
+                     <label class="checkbox-label">
+                        <input type="checkbox" data-controls="limits-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                 <div id="limits-section">
+                    <div id="limits-container"></div>
+                    <button type="button" class="btn-add" data-template="limit-template" data-container="limits-container">Dodaj limit</button>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">16. Udzielone przez firmę poręczenia, wystawione weksle lub zabezpieczenia na rzecz innych podmiotów</h3>
+                     <label class="checkbox-label">
+                        <input type="checkbox" data-controls="sureties-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                 <div id="sureties-section">
+                    <div id="sureties-container"></div>
+                    <button type="button" class="btn-add" data-template="surety-template" data-container="sureties-container">Dodaj poręczenie</button>
+                </div>
+            </div>
 
-            fillFormField(id, value) {
-                const element = document.getElementById(id);
-                if (element && value != null) element.value = value;
-            },
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">17. Czy w ostatnich 3 latach firma korzystała z dotacji (UE, państwowe, itp.)</h3>
+                     <label class="checkbox-label">
+                        <input type="checkbox" data-controls="subsidies-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                 <div id="subsidies-section">
+                    <div id="subsidies-container"></div>
+                    <button type="button" class="btn-add" data-template="subsidy-template" data-container="subsidies-container">Dodaj dotację</button>
+                </div>
+            </div>
+        </section>
 
-            setNipStatus(message, type = 'info') {
-                if (!this.nipStatus) return;
-                this.nipStatus.textContent = message;
-                const colors = { info: '#6b7280', success: '#22c55e', error: '#ef4444' };
-                this.nipStatus.style.color = colors[type];
-            },
+        <section class="wizard-step">
+            <h2 class="form-section-header">IV. Majątek firmy</h2>
+        
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">18. Posiadane nieruchomości - własność</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" data-controls="real-estate-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                <div id="real-estate-section">
+                    <div id="real-estate-container"></div>
+                    <button type="button" class="btn-add" data-template="real-estate-template" data-container="real-estate-container">Dodaj nieruchomość</button>
+                </div>
+            </div>
+        
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">19. Posiadane środki transport / maszyny / majątek ruchomy - własność</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" data-controls="movable-assets-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                <div id="movable-assets-section">
+                    <div id="movable-assets-container"></div>
+                    <button type="button" class="btn-add" data-template="movable-asset-template" data-container="movable-assets-container">Dodaj składnik majątku</button>
+                </div>
+            </div>
 
-            saveProgress() {
-                const formData = new FormData(this.form);
-                const data = {};
-                for (let [key, value] of formData.entries()) {
-                    if (key.endsWith('[]')) {
-                        const cleanKey = key.slice(0, -2);
-                        if (!data[cleanKey]) data[cleanKey] = [];
-                        data[cleanKey].push(value);
-                    } else {
-                        data[key] = value;
-                    }
-                }
-                localStorage.setItem('formProgress', JSON.stringify(data));
-            },
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">20. Obciążenia majątku trwałego</h3>
+                     <label class="checkbox-label">
+                        <input type="checkbox" data-controls="encumbrance-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                 <div id="encumbrance-section">
+                    <div id="encumbrance-container"></div>
+                    <button type="button" class="btn-add" data-template="encumbrance-template" data-container="encumbrance-container">Dodaj obciążenie</button>
+                </div>
+            </div>
+        </section>
 
-            loadProgress() {
-                const savedData = localStorage.getItem('formProgress');
-                if (!savedData) return;
-                const data = JSON.parse(savedData);
-                for (const key in data) {
-                    const elements = this.form.querySelectorAll(`[name="${key}"]`);
-                    if (elements.length > 0) {
-                        elements[0].value = data[key];
-                    } else if (Array.isArray(data[key])) {
-                        // Obsługa dynamicznych pól
-                        const containerId = `${key.split('_')[0]}-container`;
-                        const templateId = `${key.split('_')[0]}-template`;
-                        const container = document.getElementById(containerId);
-                        if(container) {
-                            // Ta część wymagałaby bardziej złożonej logiki do odtworzenia dynamicznych wierszy
-                            // Na razie zostawiamy to uproszczone
-                        }
-                    }
-                }
-            }
-        };
+        <section class="wizard-step">
+            <h2 class="form-section-header">V. Struktura należności i zobowiązań</h2>
 
-        App.init();
-    });
-  </script>
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">21. Struktura czasowa należności z tytułu dostaw i usług</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" data-controls="receivables-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                <div id="receivables-section" class="form-grid">
+                    <div class="financial-period-card">
+                        <h4>Stan na koniec ubiegłego roku</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="form-label">Należności ogółem</label>
+                                <div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div>
+                            </div>
+                            <hr>
+                            <p class="form-label font-semibold">w tym należności przeterminowane:</p>
+                            <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                        </div>
+                    </div>
+                    <div class="financial-period-card">
+                        <h4>Stan na ostatnie F-01</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="form-label">Należności ogółem</label>
+                                <div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div>
+                            </div>
+                            <hr>
+                            <p class="form-label font-semibold">w tym należności przeterminowane:</p>
+                            <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">22. Struktura czasowa zobowiązań z tytułu dostaw i usług</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" data-controls="liabilities-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                <div id="liabilities-section" class="form-grid">
+                     <div class="financial-period-card">
+                        <h4>Stan na koniec ubiegłego roku</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="form-label">Zobowiązania ogółem</label>
+                                <div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div>
+                            </div>
+                            <hr>
+                            <p class="form-label font-semibold">w tym zobowiązania przeterminowane:</p>
+                            <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                        </div>
+                    </div>
+                    <div class="financial-period-card">
+                        <h4>Stan na ostatnie F-01</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="form-label">Zobowiązania ogółem</label>
+                                <div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div>
+                            </div>
+                            <hr>
+                            <p class="form-label font-semibold">w tym zobowiązania przeterminowane:</p>
+                            <div><label class="form-label">Ogółem (przeterminowane)</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Do 30 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">31-60 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">61-90 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">91-180 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">181-360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                            <div><label class="form-label">Powyżej 360 dni</label><div class="input-with-unit"><input type="text" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="wizard-step">
+            <h2 class="form-section-header">VI. Kontrakty</h2>
+
+            <div class="subsection">
+                <h3 class="subsection-header">23. Wykaz największych wykonanych kontraktów w 3 ostatnich latach.</h3>
+                <p class="label-note" style="margin-top: -0.5rem; margin-bottom: 1rem;">(Proszę załączyć referencje lub protokoły odbioru końcowych prac)</p>
+                
+                <div id="completed-contracts-section">
+                    <div id="completed-contracts-container"></div>
+                    <button type="button" class="btn-add" data-template="completed-contract-template" data-container="completed-contracts-container">Dodaj kontrakt</button>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <h3 class="subsection-header">24. Wykaz kontraktów w trakcie realizacji</h3>
+                <div class="info-text">
+                    <p>Proszę uzupełnić załącznik C (w ostatnim kroku kreatora) lub załączyć podpisany dokument zawierający analogiczne informacje.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="wizard-step">
+            <h2 class="form-section-header">VII. Ankieta</h2>
+
+            <div class="subsection">
+                <div class="subsection-header-with-actions">
+                    <h3 class="subsection-header">Czy było zgłoszone roszczenie z którejkolwiek gwarancji udzielonej przez innego Gwaranta na wniosek Zobowiązanego/Wnioskodawcy?</h3>
+                    <label class="checkbox-label">
+                        <input type="checkbox" data-controls="claims-section" class="form-checkbox brak-checkbox"> BRAK
+                    </label>
+                </div>
+                <div id="claims-section">
+                    <p class="label-note" style="margin-top: -0.5rem; margin-bottom: 1rem;">(Jeśli tak, prosimy o wypełnienie lub wybrać "brak")</p>
+                    <div id="claims-container"></div>
+                    <button type="button" class="btn-add" data-template="claim-template" data-container="claims-container">Dodaj zgłoszenie</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="wizard-step">
+            <h2 class="form-section-header">Część B: Oświadczenia</h2>
+            <div class="statements-container">
+                <div class="statement-item">
+                    <p class="statement-text">
+                        <strong>1. Oświadczam/-y, że jestem/-śmy:</strong><br>
+                        <span class="label-note">W rozumieniu Rozporządzenia Komisji (UE) nr 651/2014.</span>
+                    </p>
+                    <div class="statement-options">
+                        <select name="msp_status" class="input-field">
+                            <option value="mikro">Mikroprzedsiębiorcą</option>
+                            <option value="maly">Małym przedsiębiorcą</option>
+                            <option value="sredni">Średnim przedsiębiorcą</option>
+                            <option value="duzy">Dużym przedsiębiorcą</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="statement-item">
+                    <p class="statement-text"><strong>2. Oświadczam/-y, że korzystałem/-liśmy ze środków pomocy publicznej w przeciągu ostatnich 3 lat:</strong></p>
+                    <div class="statement-options" id="public-aid-options">
+                         <select class="input-field" id="public_aid_select">
+                            <option value="no">NIE</option>
+                            <option value="yes">TAK</option>
+                        </select>
+                        <div class="input-with-unit" id="public-aid-amount-container" style="display: none; flex-grow: 1;">
+                            <input type="text" data-format="currency" class="input-field" placeholder="O łącznej wartości">
+                            <span class="unit">PLN</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="statement-item"><p class="statement-text"><strong>3. Oświadczam/-y, że Skarb Państwa oraz państwowe osoby prawne nie posiadają akcji/udziałów w kapitale reprezentowanego podmiotu:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie posiadają)</option><option value="nie">NIE (posiadają)</option></select></div></div>
+                <div class="statement-item"><p class="statement-text"><strong>4. Oświadczam/-y, że jestem/-śmy płatnikiem podatku VAT:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (jestem/-śmy)</option><option value="nie">NIE (nie jestem/-śmy)</option></select></div></div>
+                <div class="statement-item"><p class="statement-text"><strong>5. Oświadczam/-y, że nie znajduję/-emy się w trudnej sytuacji (nie jesteśmy zagrożonym przedsiębiorstwem):</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie znajduję/-emy się)</option><option value="nie">NIE (znajduję/-emy się)</option></select></div></div>
+                <div class="statement-item"><p class="statement-text"><strong>6. Oświadczam/-y, że nie posiadam/-y zaległości wobec ZUS:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie posiadam/-y)</option><option value="nie">NIE (posiadam/-y)</option><option value="ugoda">Ugoda z ZUS</option></select></div></div>
+                <div class="statement-item"><p class="statement-text"><strong>7. Oświadczam/-y, że nie posiadam/-y zaległości wobec Urzędu Skarbowego:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie posiadam/-y)</option><option value="nie">NIE (posiadam/-y)</option><option value="ugoda">Ugoda z US</option></select></div></div>
+                <div class="statement-item"><p class="statement-text"><strong>8. Oświadczam/-y, że posiadane rachunki bankowe są wolne od zajęć egzekucyjnych:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK</option><option value="nie">NIE</option></select></div></div>
+                <div class="statement-item"><p class="statement-text"><strong>9. Oświadczam/-y, że wobec firmy nie toczy się postępowanie upadłościowe/likwidacyjne:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie toczy się)</option><option value="nie">NIE (toczy się)</option></select></div></div>
+                <div class="statement-item"><p class="statement-text"><strong>10. Oświadczam/-y, że wobec firmy nie toczą się postępowania sądowe/administracyjne:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie toczą się)</option><option value="nie">NIE (toczą się)</option></select></div></div>
+                <div class="statement-item"><p class="statement-text"><strong>11. Oświadczam/-y, że nie zachodzą przesłanki wykluczenia z Prawa zamówień publicznych:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (nie zachodzą)</option><option value="nie">NIE (zachodzą)</option></select></div></div>
+                <div class="statement-item"><p class="statement-text"><strong>12. Oświadczamy, że zapoznaliśmy się z Regulaminem i akceptujemy jego warunki:</strong></p><div class="statement-options"><select class="input-field"><option value="tak">TAK (zapoznaliśmy się i akceptujemy)</option><option value="nie">NIE</option></select></div></div>
+
+                <div class="declarations-box">
+                     <ol>
+                        <li>Wyrażam/-y zgodę, na przekazywanie informacji dotyczących mojej/naszej sytuacji ekonomiczno-finansowej pomiędzy Funduszem Rozwoju i Promocji Województwa Wielkopolskiego S.A. a instytucjami finansowymi biorącymi udział w poręczeniu.</li>
+                        <li>Wyrażam/-y zgodę na przetwarzanie danych osobowych przez Polską Agencję Rozwoju Przedsiębiorczości lub inny podmiot na podstawie udzielonego mu przez Polską Agencję Rozwoju Przedsiębiorczości upoważnienia.</li>
+                        <li>Wyrażam/-y zgodę na przetwarzanie, także w przyszłości, moich/naszych danych osobowych zgodnie z ustawą z dnia 29 sierpnia 1997 r. o ochronie danych osobowych (t.j. Dz.U. 2016 poz. 922) przez FRIPWW S.A. (KRS: 0000094064) w celu oceny mojej/naszej wiarygodności ekonomiczno-finansowej i płatniczej przez w/w podmioty. Przetwarzanie obejmuje także wzajemne przekazywanie moich/naszych danych osobowych pomiędzy wskazanymi powyżej podmiotami.</li>
+                        <li>Upoważniam/-y Fundusz Rozwoju i Promocji Województwa Wielkopolskiego S.A. do wystawienia faktury VAT bez mojego/naszego podpisu oraz, że zobowiązuję/-my się do uzupełnienia wniosku lub złożonych dokumentów na żądanie Funduszu Rozwoju i Promocji Województwa Wielkopolskiego S.A.</li>
+                        <li>Na podstawie art. 105 ust. 4a, 4a1 ustawy prawo bankowe z dnia 29 sierpnia 1997 (tj. Dz. U. z 2016, poz. 1988) w związku z art. 13 ustawy z dnia 9 kwietnia 2010 r. o udostępnianiu informacji gospodarczych i wymianie danych gospodarczych (tj. Dz. U. z 2014 r. pos. 1015 ze zm.) niniejszym upoważniam/-y Fundusz Rozwoju i Promocji Województwa Wielkopolskiego S.A. [...] do wystąpienia do Krajowego Rejestru Długów Biura Informacji Gospodarczej SA oraz Biura Informacji Gospodarczej InfoMonitor S.A. [...] o udostępnienie z Biura Informacji Kredytowej S.A. i Związku Banków Polskich danych dotyczących mojego/naszego wymagalnego zadłużenia [...].</li>
+                        <li>Zgodnie z art. 13 ust. 1 i ust. 2 RODO, przyjmuję do wiadomości, iż Administratorem moich danych osobowych jest Fundusz Rozwoju i Promocji Województwa Wielkopolskiego S.A. [...] oraz że zapoznałem/am się z celem, podstawą prawną i czasem przetwarzania danych, a także z przysługującymi mi prawami.</li>
+                        <li>Wyrażam zgodę na przetwarzanie przez Fundusz moich danych osobowych zawartych w niniejszym formularzu w celu umożliwienia kontaktu oraz przekazywania materiałów marketingowych i promocyjnych.</li>
+                        <li>Wyrażam zgodę na otrzymywanie od Funduszu drogą elektroniczną na wskazany przeze mnie adres e-mail informacji handlowej.</li>
+                        <li>Wyrażam zgodę na wykorzystanie moich danych przez Fundusz w celu realizacji marketingu bezpośredniego przy użyciu telekomunikacyjnych urządzeń końcowych.</li>
+                        <li>Pani/Pana dane osobowe przetwarzane będą w celach umożliwienia kontaktu oraz przekazywania materiałów marketingowych i promocyjnych na podstawie udzielonej przez Panią/Pana zgody (RODO Art. 6, ust. 1, lit. a). Pani/Pana dane osobowe będą wykorzystywane w opisywanym celu do momentu wycofania udzielonej przez Panią/Pana zgody.</li>
+                        <li>Pani/Pana dane osobowe mogą zostać udostępnione dostawcom systemów teleinformatycznych oraz firmom doradczym i audytowym, z którymi współpracuje Administrator.</li>
+                        <li>Posiada Pani/Pan prawo dostępu do treści swoich danych oraz prawo ich sprostowania, usunięcia, ograniczenia przetwarzania, prawo do przenoszenia danych, prawo do cofnięcia zgody w dowolnym momencie bez wpływu na zgodność z prawem przetwarzania, którego dokonano na podstawie zgody przed jej cofnięciem.</li>
+                    </ol>
+                </div>
+                <div class="master-consent-container">
+                     <label class="checkbox-label items-start">
+                        <input type="checkbox" name="master_consent" required class="form-checkbox">
+                        <span class="statement-text">
+                            <strong>Oświadczam, że zapoznałem/am się z powyższymi oświadczeniami i akceptuję ich treść.</strong><br>
+                            <span class="label-note">Świadom/-a odpowiedzialności karnej wynikającej m.in. z Kodeksu karnego art. 297 § 1 ustawy z dnia 6 czerwca 1997 r. (Dz.U. nr 88 poz. 553 z późn. zm.) jednocześnie oświadczam, że informacje zawarte w niniejszym wniosku oraz przekazane ustnie są zgodne ze stanem faktycznym i prawnym.</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <section class="wizard-step">
+            <h2 class="form-section-header">Część C: Wykaz kontraktów w trakcie realizacji</h2>
+            <div class="subsection">
+                <p class="label-note" style="margin-bottom: 1rem;">(Proszę wypełnić lub załączyć własny wykaz zawierający analogiczne dane)</p>
+                
+                <div id="ongoing-contracts-section">
+                    <div id="ongoing-contracts-container"></div>
+                    <button type="button" class="btn-add" data-template="ongoing-contract-template" data-container="ongoing-contracts-container">Dodaj kontrakt w realizacji</button>
+                    
+                    <div class="totals-row">
+                        <span class="totals-label">Razem:</span>
+                        <div class="totals-fields-wrapper">
+                            <div class="input-with-unit">
+                                <input type="text" id="ongoing-contracts-value-total" class="input-field" readonly placeholder="Wartość kontraktów">
+                                <span class="unit">PLN</span>
+                            </div>
+                            <div class="input-with-unit">
+                                <input type="text" id="ongoing-contracts-remaining-total" class="input-field" readonly placeholder="Wartość pozostała">
+                                <span class="unit">PLN</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <div class="form-footer">
+             <p class="footer-note">Pola oznaczone <span class="required-asterisk">*</span> są wymagane.</p>
+            <div class="wizard-navigation">
+                <button type="button" id="prevBtn" class="btn-secondary">Wstecz</button>
+                <button type="button" id="nextBtn" class="btn-primary">Dalej</button>
+                <button type="button" id="generatePdf" class="btn-primary" style="display: none;">Generuj PDF</button>
+            </div>
+             <button type="button" id="clearFormBtn" class="btn-danger">Wyczyść Formularz</button>
+        </div>
+    </form>
+</div>
+
+<div id="thankYouScreen" class="form-container" style="display: none; padding: 4rem; text-align: center;">
+    <h1 class="header-main-title" style="font-size: 2rem; margin-bottom: 1rem;">Dziękujemy!</h1>
+    <p style="font-size: 1.1rem; color: #374151; line-height: 1.6;">
+        Twój wniosek został pomyślnie wygenerowany i pobrany jako plik PDF.<br>
+        Prosimy o jego elektroniczne podpisanie i odesłanie na nasz adres e-mail.
+    </p>
+    <button type="button" id="startNewApplicationBtn" class="btn-primary" style="margin-top: 2rem;">Wypełnij nowy wniosek</button>
+</div>
+
+<div id="modalOverlay">
+    <div id="modalContent"><div id="modalBody"></div></div>
+</div>
+
+<template id="owner-template">
+    <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2"><label class="form-label">Nazwisko / nazwa</label><input type="text" name="owner_name[]" class="input-field"></div>
+        <div><label class="form-label">Udziały / akcje (%)</label><div class="input-with-unit"><input type="number" name="owner_shares_percent[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
+        <div><label class="form-label">Udziały / akcje (wartość)</label><div class="input-with-unit"><input type="text" name="owner_shares_value[]" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="link-template">
+     <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2"><label class="form-label">Nazwa firmy</label><input type="text" name="link_name[]" class="input-field"></div>
+        <div><label class="form-label">Udziały / akcje (%)</label><div class="input-with-unit"><input type="number" name="link_shares_percent[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
+        <div><label class="form-label">Udziały / akcje (wartość)</label><div class="input-with-unit"><input type="text" name="link_shares_value[]" data-format="currency" class="input-field"><span class="unit">PLN</span></div></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="pkd-template">
+    <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2"><label class="form-label">Rodzaje działalności</label><input type="text" name="pkd_desc[]" class="input-field"></div>
+        <div><label class="form-label">PKD</label><input type="text" name="pkd_code[]" class="input-field"></div>
+        <div><label class="form-label">Procentowy udział</label><div class="input-with-unit"><input type="number" name="pkd_percent[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="contractor-template">
+    <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2"><label class="form-label">Nazwa kontrahenta</label><input type="text" name="contractor_name[]" class="input-field"></div>
+        <div class="grid-col-span-2"><label class="form-label">Zakres prac / dostaw</label><input type="text" name="contractor_scope[]" class="input-field"></div>
+        <div class="grid-col-span-2"><label class="form-label">Udział w całości dostaw</label><div class="input-with-unit"><input type="number" name="contractor_share[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="org-link-template">
+    <div class="dynamic-row form-grid">
+        <div><label class="form-label">Imię i nazwisko osoby</label><input type="text" name="org_link_person[]" class="input-field"></div>
+        <div><label class="form-label">Nazwa firmy</label><input type="text" name="org_link_company[]" class="input-field"></div>
+        <div class="grid-col-span-2"><label class="form-label">% udziałów</label><div class="input-with-unit"><input type="number" name="org_link_share[]" class="input-field" min="0" max="100"><span class="unit">%</span></div></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="account-template">
+    <div class="dynamic-row form-grid">
+        <div><label class="form-label">Nazwa banku</label><input type="text" name="bank_name[]" required class="input-field"></div>
+        <div><label class="form-label">Numer rachunku</label><input type="text" name="account_number[]" data-validation="nrb" data-format="nrb" required title="Podaj 26 cyfr numeru rachunku." class="input-field"></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="credit-template">
+    <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2"><label class="form-label">Nazwa banku</label><input type="text" name="credit_bank[]" class="input-field"></div>
+        <div><label class="form-label">Rodzaj kredytu</label><input type="text" name="credit_type[]" placeholder="np. obrotowy, inwestycyjny" class="input-field"></div>
+        <div><label class="form-label">Wysokość / kwota do spłaty</label><div class="input-with-unit"><input type="text" data-format="currency" name="credit_amount[]" class="input-field"><span class="unit">PLN</span></div></div>
+        <div><label class="form-label">Zabezpieczenie</label><input type="text" name="credit_security[]" placeholder="np. hipoteka, weksel" class="input-field"></div>
+        <div><label class="form-label">Termin wygaśnięcia</label><input type="date" name="credit_expiry[]" class="input-field"></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="leasing-template">
+    <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2"><label class="form-label">Leasingodawca</label><input type="text" name="lease_provider[]" class="input-field"></div>
+        <div><label class="form-label">Leasing (operacyjny lub finansowy)</label><input type="text" name="lease_type[]" class="input-field"></div>
+        <div><label class="form-label">Przedmiot leasingu</label><input type="text" name="lease_subject[]" class="input-field"></div>
+        <div><label class="form-label">Kwota leasingu</label><div class="input-with-unit"><input type="text" data-format="currency" name="lease_amount[]" class="input-field"><span class="unit">PLN</span></div></div>
+        <div><label class="form-label">Miesięczna rata</label><div class="input-with-unit"><input type="text" data-format="currency" name="lease_rate[]" class="input-field"><span class="unit">PLN</span></div></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="limit-template">
+    <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2"><label class="form-label">Nazwa Gwaranta</label><input type="text" name="limit_guarantor[]" class="input-field"></div>
+        <div><label class="form-label">Rodzaj gwarancji</label><input type="text" name="limit_type[]" class="input-field"></div>
+        <div><label class="form-label">Zabezpieczenie</label><input type="text" name="limit_security[]" class="input-field"></div>
+        <div><label class="form-label">Wysokość limitu</label><div class="input-with-unit"><input type="text" data-format="currency" name="limit_amount[]" class="input-field"><span class="unit">PLN</span></div></div>
+        <div><label class="form-label">Suma wykorzystanego limitu</label><div class="input-with-unit"><input type="text" data-format="currency" name="limit_used[]" class="input-field"><span class="unit">PLN</span></div></div>
+        <div><label class="form-label">Termin wygaśnięcia limitu</label><input type="date" name="limit_expiry[]" class="input-field"></div>
+        <div><label class="form-label">Termin wygaśnięcia ostatniej gwarancji</label><input type="date" name="limit_last_guarantee_expiry[]" class="input-field"></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="surety-template">
+    <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2"><label class="form-label">Rodzaj zobowiązania</label><input type="text" name="surety_type[]" class="input-field"></div>
+        <div><label class="form-label">Wysokość zobowiązania</label><div class="input-with-unit"><input type="text" data-format="currency" name="surety_amount[]" class="input-field"><span class="unit">PLN</span></div></div>
+        <div><label class="form-label">Na rzecz</label><input type="text" name="surety_for[]" class="input-field"></div>
+        <div><label class="form-label">Termin wygaśnięcia</label><input type="date" name="surety_expiry[]" class="input-field"></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="subsidy-template">
+    <div class="dynamic-row form-grid" style="grid-template-columns: 1fr auto; align-items: end;">
+        <div><label class="form-label">Kwota dotacji</label><div class="input-with-unit"><input type="text" data-format="currency" name="subsidy_amount[]" class="input-field"><span class="unit">PLN</span></div></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="real-estate-template">
+    <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2"><label class="form-label">Rodzaj/adres</label><input type="text" name="re_address[]" class="input-field"></div>
+        <div><label class="form-label">Nr KW</label><input type="text" name="re_kw[]" class="input-field"></div>
+        <div><label class="form-label">Wartość rynkowa</label><div class="input-with-unit"><input type="text" data-format="currency" name="re_value[]" class="input-field"><span class="unit">PLN</span></div></div>
+        <div class="grid-col-span-2"><label class="form-label">Obciążenie</label>
+            <select name="re_burden[]" class="input-field" required>
+                <option value="">-- wybierz --</option><option value="TAK">TAK</option><option value="NIE">NIE</option>
+            </select>
+        </div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="movable-asset-template">
+     <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2"><label class="form-label">Rodzaj</label><input type="text" name="ma_type[]" class="input-field"></div>
+        <div><label class="form-label">Wartość rynkowa</label><div class="input-with-unit"><input type="text" data-format="currency" name="ma_value[]" class="input-field"><span class="unit">PLN</span></div></div>
+        <div><label class="form-label">Obciążenie</label>
+            <select name="ma_burden[]" class="input-field" required>
+                <option value="">-- wybierz --</option><option value="TAK">TAK</option><option value="NIE">NIE</option>
+            </select>
+        </div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="encumbrance-template">
+    <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2"><label class="form-label">Na rzecz</label><input type="text" name="enc_for[]" class="input-field"></div>
+        <div class="grid-col-span-2"><label class="form-label">Rodzaj obciążonego majątku</label><input type="text" name="enc_asset_type[]" class="input-field"></div>
+        <div><label class="form-label">Przybliżona wartość rynkowa</label><div class="input-with-unit"><input type="text" data-format="currency" name="enc_market_value[]" class="input-field"><span class="unit">PLN</span></div></div>
+        <div><label class="form-label">Wysokość obciążenia</label><div class="input-with-unit"><input type="text" data-format="currency" name="enc_amount[]" class="input-field"><span class="unit">PLN</span></div></div>
+        <div class="grid-col-span-2"><label class="form-label">Forma obciążenia</label><input type="text" name="enc_type[]" placeholder="np. hipoteka, zastaw" class="input-field"></div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="completed-contract-template">
+    <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2">
+            <label class="form-label">Przedmiot kontraktu</label>
+            <input type="text" name="cc_subject[]" class="input-field">
+        </div>
+        <div>
+            <label class="form-label">Zleceniodawca</label>
+            <input type="text" name="cc_client[]" class="input-field">
+        </div>
+        <div>
+            <label class="form-label">Wartość kontraktu</label>
+            <div class="input-with-unit"><input type="text" data-format="currency" name="cc_value[]" class="input-field"><span class="unit">PLN</span></div>
+        </div>
+        <div class="grid-col-span-2">
+             <label class="form-label">Termin wykonania</label>
+            <input type="date" name="cc_date[]" class="input-field">
+        </div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="claim-template">
+    <div class="dynamic-row form-grid">
+        <div>
+            <label class="form-label">Kwota roszczenia</label>
+            <div class="input-with-unit"><input type="text" data-format="currency" name="claim_amount[]" class="input-field"><span class="unit">PLN</span></div>
+        </div>
+        <div>
+            <label class="form-label">Data zgłoszenia roszczenia</label>
+            <input type="date" name="claim_date[]" class="input-field">
+        </div>
+        <div class="grid-col-span-2">
+            <label class="form-label">Rodzaj gwarancji</label>
+            <input type="text" name="claim_type[]" class="input-field">
+        </div>
+        <div class="grid-col-span-2">
+            <label class="form-label">Przyczyny zgłoszenia roszczenia</label>
+            <textarea name="claim_reason[]" class="input-field" rows="3"></textarea>
+        </div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+<template id="ongoing-contract-template">
+    <div class="dynamic-row form-grid">
+        <div class="grid-col-span-2">
+            <label class="form-label">Nazwa zadania</label>
+            <input type="text" name="ongoing_contract_name[]" class="input-field">
+        </div>
+        <div class="grid-col-span-2">
+            <label class="form-label">Zamawiający / Inwestor</label>
+            <input type="text" name="ongoing_contract_client[]" class="input-field">
+        </div>
+        <div>
+            <label class="form-label">Wartość kontraktu</label>
+            <div class="input-with-unit"><input type="text" data-format="currency" name="ongoing_contract_value[]" class="input-field sum-source-contract-value"><span class="unit">PLN</span></div>
+        </div>
+        <div>
+            <label class="form-label">Wartość pozostała do zafakturowania</label>
+            <div class="input-with-unit"><input type="text" data-format="currency" name="ongoing_contract_remaining[]" class="input-field sum-source-contract-remaining"><span class="unit">PLN</span></div>
+        </div>
+        <div>
+            <label class="form-label">Termin realizacji</label>
+            <input type="date" name="ongoing_contract_date[]" class="input-field">
+        </div>
+        <div>
+            <label class="form-label">Stopień realizacji kontraktu</label>
+            <div class="input-with-unit"><input type="number" name="ongoing_contract_progress[]" class="input-field" min="0" max="100"><span class="unit">%</span></div>
+        </div>
+        <button type="button" class="btn-remove">Usuń</button>
+    </div>
+</template>
+
+
+<script src="script.js" defer></script>
 </body>
 </html>
