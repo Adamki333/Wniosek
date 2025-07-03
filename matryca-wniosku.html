@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Wniosek o zawarcie / zmianę Umowy Ramowej</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #d90000;
+            --secondary-color: #f3f4f6;
+            --border-color: #e5e7eb;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+        }
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            font-size: 10pt;
+            -webkit-print-color-adjust: exact;
+        }
+        h1, h2, h3, h4, p, table { margin: 0; padding: 0; }
+        
+        .main-container {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        
+        /* OSTATECZNE REGUŁY ŁAMANIA STRON */
+        .unbreakable-section {
+            page-break-inside: avoid; /* Zapobiegaj łamaniu wewnątrz tych bloków */
+            margin-top: 25px;
+        }
+        
+        h1.part-title {
+             page-break-before: always; /* Zawsze zaczynaj nową część (B, C) od nowej strony */
+        }
+        h1.part-title:first-of-type {
+            page-break-before: auto; /* Anuluj regułę dla pierwszej części (A) */
+        }
+        .section-title {
+             page-break-after: avoid; /* Unikaj łamania strony tuż po głównym tytule sekcji */
+        }
+
+        /* Pozostałe style bez zmian */
+        .header-table { width: 100%; margin-bottom: 20px; }
+        .header-logo img { max-width: 180px; height: auto; }
+        .header-title-container { text-align: center; vertical-align: middle; }
+        .header-main-title { font-size: 18pt; font-weight: 700; color: var(--primary-color); }
+        .header-date { text-align: right; vertical-align: middle; font-size: 10pt; }
+        .footer { margin-top: 50px; padding-top: 10px; border-top: 2px solid var(--border-color); text-align: right; font-size: 8pt; color: var(--text-secondary); }
+        .part-title { font-size: 18pt; font-weight: 700; text-align: center; margin: 40px 0 10px 0; background-color: var(--secondary-color); padding: 10px; border-radius: 5px; }
+        .section-title { font-size: 14pt; font-weight: 700; padding-bottom: 8px; border-bottom: 3px solid var(--primary-color); margin-top: 30px; margin-bottom: 20px; }
+        .unbreakable-section .section-title { margin-top: 0; }
+        .subsection-title { font-size: 11pt; font-weight: 600; margin: 0 0 10px 0; padding-bottom: 5px; border-bottom: 1px solid var(--border-color); }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table td { padding: 8px 5px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+        .data-table .label { font-weight: 600; color: var(--text-secondary); width: 35%; }
+        .data-table .value { font-weight: 500; text-align: right; }
+        .value[data-id]::before { content: '—'; color: #ccc; }
+        .value[data-id]:not(:empty)::before { content: ''; }
+        .list-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-top: 10px; }
+        .list-table th, .list-table td { padding: 8px; border: 1px solid var(--border-color); text-align: left; }
+        .list-table th { background-color: var(--secondary-color); font-weight: 700; }
+        .info-block { background-color: var(--secondary-color); border-left: 4px solid var(--primary-color); padding: 10px 15px; margin-top: 15px; font-size: 9pt; line-height: 1.5; }
+        .empty-state { text-align: center; padding: 20px; color: var(--text-secondary); font-style: italic; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <header>
+        <table class="header-table">
+            <tr>
+                <td class="header-logo"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDU3cHgiIGhlaWdodD0iMTE4cHgiIHZpZXdCb3g9IjAgMCA0NTcgMTE4IiB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogICAgPGcgaWQ9IlBhZ2UtMSIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPGcgaWQ9Ikdyb3VwLTIiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIuMDAwMDAwLCAyLjAwMDAwMCkiPgogICAgICAgICAgICA8cmVjdCBpZD0iUmVjdGFuZ2xlIiBzdHJva2U9IiNkOTAwMDAiIHN0cm9rZS13aWR0aD0iMyIgeD0iMCIgeT0iMCIgd2lkdGg9IjQ1NCIgaGVpZ2h0PSIxMTQiIHJ4PSI4Ij48L3JlY3Q+CiAgICAgICAgICAgIDx0ZXh0IGlkPSJUV09KRSBMT0dPIiBmb250LWZhbWlseT0iQXJpYWwtQm9sZCwgQXJpYWwiIGZvbnQtc2l6ZT0iNDIiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjZDkwMDAwIj4KICAgICAgICAgICAgICAgIDx0c3BhbiB4PSIxMTMuNjg4IiB5PSI3NiI+VFdPSkUgTE9HTzwvdHNwYW4+CiAgICAgICAgICAgIDwvdGV4dD4KICAgICAgICA8L2c+CiAgICA8L2c+Cjwvc3ZnPg==" alt="Logo Firmy" /></td>
+                <td class="header-title-container"><h1 class="header-main-title">Wniosek o Umowę Ramową</h1></td>
+                <td class="header-date">Data złożenia wniosku:<br><strong data-id="currentDate"></strong></td>
+            </tr>
+        </table>
+    </header>
+
+    <h1 class="part-title">Część A: Wniosek</h1>
+
+    <div class="unbreakable-section">
+        <h2 class="section-title">I. Dane wnioskodawcy</h2>
+        <h3 class="subsection-title">1. Dane adresowe</h3>
+        <table class="data-table">
+            <tr><td class="label">Pełna nazwa firmy:</td><td class="value" data-id="fullName"></td></tr>
+            <tr><td class="label">NIP:</td><td class="value" data-id="nip"></td></tr>
+            <tr><td class="label">REGON:</td><td class="value" data-id="regon"></td></tr>
+            <tr><td class="label">KRS:</td><td class="value" data-id="krs"></td></tr>
+            <tr><td class="label">Adres siedziby:</td><td class="value" data-id="fullAddress"></td></tr>
+            <tr><td class="label">Adres prowadzenia działalności:</td><td class="value" data-id="fullBusinessAddress"></td></tr>
+            <tr><td class="label">Telefon:</td><td class="value" data-id="phone"></td></tr>
+            <tr><td class="label">Adres e-mail do wysyłki poręczeń:</td><td class="value" data-id="email"></td></tr>
+        </table>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">2. Reprezentacja firmy</h3>
+        <table class="data-table">
+            <tr><td class="label">Imię i nazwisko:</td><td class="value" data-id="rep_name"></td></tr>
+            <tr><td class="label">Stanowisko / funkcja:</td><td class="value" data-id="rep_position"></td></tr>
+            <tr><td class="label">Telefon:</td><td class="value" data-id="rep_phone"></td></tr>
+            <tr><td class="label">Adres e-mail:</td><td class="value" data-id="rep_email"></td></tr>
+            <tr><td class="label">Numer dowodu osobistego:</td><td class="value" data-id="rep_id_number"></td></tr>
+            <tr><td class="label">PESEL:</td><td class="value" data-id="rep_pesel"></td></tr>
+            <tr><td class="label">Adres:</td><td class="value" data-id="rep_fullAddress"></td></tr>
+        </table>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">3. Osoba do kontaktów</h3>
+        <table class="data-table">
+            <tr><td class="label">Imię i nazwisko:</td><td class="value" data-id="contact_name"></td></tr>
+            <tr><td class="label">Stanowisko / funkcja:</td><td class="value" data-id="contact_position"></td></tr>
+            <tr><td class="label">Telefon:</td><td class="value" data-id="contact_phone"></td></tr>
+            <tr><td class="label">Adres e-mail:</td><td class="value" data-id="contact_email"></td></tr>
+        </table>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">4. Typ przedsiębiorstwa</h3>
+        <table class="data-table">
+            <tr><td class="label">Typ:</td><td class="value" data-id="enterprise_type"></td></tr>
+        </table>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">5. Właściciele / udziałowcy / wspólnicy</h3>
+        <div data-container-id="owners-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">6. Powiązania kapitałowe z innymi podmiotami</h3>
+        <div data-container-id="links-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">7. Wnioskowany limit poręczeń</h3>
+        <table class="data-table">
+            <tr><td class="label">Limit wadialny:</td><td class="value" data-id="limit_wadialny"></td></tr>
+            <tr><td class="label">Limit na pozostałe poręczenia:</td><td class="value" data-id="limit_kontrakt"></td></tr>
+            <tr><td class="label"><strong>Łącznie:</strong></td><td class="value" data-id="limit_lacznie" style="font-weight: bold;"></td></tr>
+        </table>
+    </div>
+
+    <div class="unbreakable-section">
+        <h2 class="section-title">II. Informacje ogólne</h2>
+        <h3 class="subsection-title">8. Rodzaj prowadzonej działalności</h3>
+        <div data-container-id="pkd-container"></div>
+        <table class="data-table">
+            <tr><td class="label">Data rozpoczęcia działalności:</td><td class="value" data-id="start_date"></td></tr>
+            <tr><td class="label">Ilość przetargów (udział w ub. roku):</td><td class="value" data-id="tenders_participated"></td></tr>
+            <tr><td class="label">Ilość wygranych przetargów (w ub. roku):</td><td class="value" data-id="tenders_won"></td></tr>
+            <tr><td class="label">Planowany przychód na koniec bieżącego roku:</td><td class="value" data-id="planned_revenue"></td></tr>
+        </table>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">Dane o przedsiębiorstwie (ostatnie 4 lata)</h3>
+        <div data-container-id="financial-years-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">9. Forma opodatkowania</h3>
+        <table class="data-table">
+            <tr><td class="label">Forma:</td><td class="value" data-id="tax_form"></td></tr>
+        </table>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">10. Najważniejsi kontrahenci</h3>
+        <div data-container-id="contractors-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">11. Powiązania organizacyjne właścicieli / zarządu</h3>
+        <div data-container-id="org-links-container"></div>
+    </div>
+
+    <div class="unbreakable-section">
+        <h2 class="section-title">III. Sytuacja finansowo-ekonomiczna</h2>
+        <h3 class="subsection-title">12. Posiadane rachunki bankowe</h3>
+        <div data-container-id="accounts-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">13. Posiadane kredyty / pożyczki / linie kredytowe</h3>
+        <div data-container-id="credits-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">14. Zawarte umowy leasingowe</h3>
+        <div data-container-id="leasing-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">15. Posiadane limity i gwarancje</h3>
+        <div data-container-id="limits-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">16. Udzielone poręczenia / weksle</h3>
+        <div data-container-id="sureties-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">17. Otrzymane dotacje (ostatnie 3 lata)</h3>
+        <div data-container-id="subsidies-container"></div>
+    </div>
+    
+    <div class="unbreakable-section">
+        <h2 class="section-title">IV. Majątek firmy</h2>
+        <h3 class="subsection-title">18. Posiadane nieruchomości (własność)</h3>
+        <div data-container-id="real-estate-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">19. Posiadany majątek ruchomy (własność)</h3>
+        <div data-container-id="movable-assets-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">20. Obciążenia majątku trwałego</h3>
+        <div data-container-id="encumbrance-container"></div>
+    </div>
+    
+    <div class="unbreakable-section">
+        <h2 class="section-title">V. Struktura należności i zobowiązań</h2>
+        <h3 class="subsection-title">21. Struktura czasowa należności</h3>
+        <div data-container-id="receivables-container"></div>
+    </div>
+    <div class="unbreakable-section">
+        <h3 class="subsection-title">22. Struktura czasowa zobowiązań</h3>
+        <div data-container-id="liabilities-container"></div>
+    </div>
+    
+    <div class="unbreakable-section">
+        <h2 class="section-title">VI. Kontrakty</h2>
+        <h3 class="subsection-title">23. Wykaz największych wykonanych kontraktów (ostatnie 3 lata)</h3>
+        <div data-container-id="completed-contracts-container"></div>
+    </div>
+
+    <div class="unbreakable-section">
+        <h2 class="section-title">VII. Ankieta</h2>
+        <h3 class="subsection-title">Zgłoszone roszczenia z gwarancji</h3>
+        <div data-container-id="claims-container"></div>
+    </div>
+    
+    <h1 class="part-title">Część B: Oświadczenia</h1>
+    <div class="unbreakable-section">
+        <table class="data-table">
+            <tr><td class="label">Status MŚP:</td><td class="value" data-id="statement_msp_status"></td></tr>
+            <tr><td class="label">Korzystanie z pomocy publicznej:</td><td class="value" data-id="statement_public_aid"></td></tr>
+            <tr><td class="label">Udziały Skarbu Państwa:</td><td class="value" data-id="statement_state_shares"></td></tr>
+            <tr><td class="label">Płatnik VAT:</td><td class="value" data-id="statement_vat_payer"></td></tr>
+            <tr><td class="label">Sytuacja ekonomiczna (nie w trudnej):</td><td class="value" data-id="statement_not_in_difficulty"></td></tr>
+            <tr><td class="label">Zaległości wobec ZUS:</td><td class="value" data-id="statement_zus_arrears"></td></tr>
+            <tr><td class="label">Zaległości wobec US:</td><td class="value" data-id="statement_tax_arrears"></td></tr>
+            <tr><td class="label">Zajęcia egzekucyjne na rachunkach:</td><td class="value" data-id="statement_bank_seizures"></td></tr>
+            <tr><td class="label">Postępowanie upadłościowe/likwidacyjne:</td><td class="value" data-id="statement_bankruptcy"></td></tr>
+            <tr><td class="label">Postępowania sądowe/administracyjne:</td><td class="value" data-id="statement_legal_proceedings"></td></tr>
+            <tr><td class="label">Przesłanki wykluczenia z PZP:</td><td class="value" data-id="statement_pzp_exclusion"></td></tr>
+            <tr><td class="label">Akceptacja regulaminu:</td><td class="value" data-id="statement_rules_accepted"></td></tr>
+        </table>
+        <div class="info-block">
+            <strong>Potwierdzono zapoznanie się i akceptację wszystkich oświadczeń i klauzul informacyjnych zawartych w formularzu.</strong>
+        </div>
+    </div>
+    
+    <h1 class="part-title">Część C: Wykaz kontraktów w trakcie realizacji</h1>
+    <div class="unbreakable-section">
+        <div data-container-id="ongoing-contracts-container"></div>
+    </div>
+    
+    <footer class="footer">
+        <p>Dokument wygenerowany elektronicznie dnia <span data-id="currentDate"></span></p>
+        <p>Fundusz Rozwoju i Promocji Województwa Wielkopolskiego S.A.</p>
+    </footer>
+
+</div>
+
+</body>
+</html>
